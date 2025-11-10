@@ -12,14 +12,14 @@ const HomeSocialSection: React.FC = () => {
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
           <h2
-            className="text-3xl sm:text-4xl font-bold text-[#0066AE]"
+            className="text-3xl sm:text-4xl font-bold text-[#005592]"
             style={{ fontFamily: "Roboto, sans-serif" }}
           >
             Media Sosial
           </h2>
           <Link
             to="/portofolio"
-            className="bg-[#0066AE] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#004d82] transition-colors duration-300"
+            className="bg-[#005592] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#004d82] transition-colors duration-300"
           >
             See More
           </Link>
@@ -50,7 +50,7 @@ const HomeSocialSection: React.FC = () => {
                   {featuredPost.category.name}
                 </p>
                 <h3
-                  className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 group-hover:text-[#0066AE]"
+                  className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 group-hover:text-[#005592]"
                   style={{ fontFamily: "Roboto, sans-serif" }}
                 >
                   {featuredPost.title}
@@ -94,7 +94,7 @@ const HomeSocialSection: React.FC = () => {
                     {post.category.name}
                   </p>
                   <h4
-                    className="text-sm sm:text-base font-bold text-gray-800 mt-1 group-hover:text-[#0066AE]"
+                    className="text-sm sm:text-base font-bold text-gray-800 mt-1 group-hover:text-[#005592]"
                     style={{ fontFamily: "Roboto, sans-serif" }}
                   >
                     {post.title}

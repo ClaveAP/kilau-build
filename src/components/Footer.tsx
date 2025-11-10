@@ -13,7 +13,7 @@ const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#0066AE] hover:bg-gray-100 transition-colors"
+      className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#005592] hover:bg-gray-100 transition-colors"
     >
       {children}
     </a>
@@ -22,7 +22,7 @@ const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#0066AE] text-white pt-16 pb-8">
+    <footer className="bg-[#005592] text-white pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Left Column - Logo & Description */}

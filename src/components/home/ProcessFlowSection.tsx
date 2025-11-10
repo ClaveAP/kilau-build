@@ -47,14 +47,14 @@ const ProcessFlowSection: React.FC = () => {
             {/* Step 1 - Konsultasi */}
             <div className="flex-1 text-center relative z-10">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-[#0066AE] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 bg-[#005592] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   1
                 </div>
               </div>
               <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 bg-white border-2 border-[#0066AE] rounded-2xl flex items-center justify-center">
+                <div className="w-20 h-20 bg-white border-2 border-[#005592] rounded-2xl flex items-center justify-center">
                   <svg
-                    className="w-10 h-10 text-[#0066AE]"
+                    className="w-10 h-10 text-[#005592]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -88,14 +88,14 @@ const ProcessFlowSection: React.FC = () => {
               style={{ marginTop: "80px" }}
             >
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-[#0066AE] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 bg-[#005592] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   2
                 </div>
               </div>
               <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 bg-white border-2 border-[#0066AE] rounded-2xl flex items-center justify-center">
+                <div className="w-20 h-20 bg-white border-2 border-[#005592] rounded-2xl flex items-center justify-center">
                   <svg
-                    className="w-10 h-10 text-[#0066AE]"
+                    className="w-10 h-10 text-[#005592]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -132,14 +132,14 @@ const ProcessFlowSection: React.FC = () => {
             {/* Step 3 - Perencanaan */}
             <div className="flex-1 text-center relative z-10">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-[#0066AE] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 bg-[#005592] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   3
                 </div>
               </div>
               <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 bg-white border-2 border-[#0066AE] rounded-2xl flex items-center justify-center">
+                <div className="w-20 h-20 bg-white border-2 border-[#005592] rounded-2xl flex items-center justify-center">
                   <svg
-                    className="w-10 h-10 text-[#0066AE]"
+                    className="w-10 h-10 text-[#005592]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -174,14 +174,14 @@ const ProcessFlowSection: React.FC = () => {
               style={{ marginTop: "80px" }}
             >
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-[#0066AE] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 bg-[#005592] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   4
                 </div>
               </div>
               <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 bg-white border-2 border-[#0066AE] rounded-2xl flex items-center justify-center">
+                <div className="w-20 h-20 bg-white border-2 border-[#005592] rounded-2xl flex items-center justify-center">
                   <svg
-                    className="w-10 h-10 text-[#0066AE]"
+                    className="w-10 h-10 text-[#005592]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -212,14 +212,14 @@ const ProcessFlowSection: React.FC = () => {
             {/* Step 5 - Pembangunan */}
             <div className="flex-1 text-center relative z-10">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-[#0066AE] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 bg-[#005592] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   5
                 </div>
               </div>
               <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 bg-white border-2 border-[#0066AE] rounded-2xl flex items-center justify-center">
+                <div className="w-20 h-20 bg-white border-2 border-[#005592] rounded-2xl flex items-center justify-center">
                   <svg
-                    className="w-10 h-10 text-[#0066AE]"
+                    className="w-10 h-10 text-[#005592]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -286,15 +286,15 @@ const ProcessFlowSection: React.FC = () => {
             <div key={step.num} className="relative">
               <div className="flex gap-4 items-start">
                 <div className="shrink-0">
-                  <div className="w-14 h-14 bg-[#0066AE] rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                  <div className="w-14 h-14 bg-[#005592] rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
                     {step.num}
                   </div>
                 </div>
                 <div className="flex-1 pt-2">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 bg-white border-2 border-[#0066AE] rounded-xl flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 bg-white border-2 border-[#005592] rounded-xl flex items-center justify-center shrink-0">
                       <svg
-                        className="w-6 h-6 text-[#0066AE]"
+                        className="w-6 h-6 text-[#005592]"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

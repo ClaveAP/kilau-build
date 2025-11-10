@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
           <Link to="/" className="flex items-center">
             <img src={Logo} alt="Kilau Build Logo" className="w-14 h-14 mr-3" />
             <span
-              className="text-2xl font-bold text-[#0066AE]"
+              className="text-2xl font-bold text-[#005592]"
               style={{ fontFamily: "Roboto, sans-serif" }}
             >
               Kilau Build
@@ -58,7 +58,7 @@ const Navbar: React.FC = () => {
                 className={`text-sm transition-colors duration-200 ${
                   isActive(item.path)
                     ? "text-[#66B2E0]"
-                    : "text-[#0066AE] hover:text-[#66B2E0]"
+                    : "text-[#005592] hover:text-[#66B2E0]"
                 }`}
                 style={{ fontFamily: "Inter, sans-serif" }}
               >
@@ -71,7 +71,7 @@ const Navbar: React.FC = () => {
           {/* 🔽 REVISI: 'md:hidden' diubah jadi 'lg:hidden' 🔽 */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden text-[#0066AE] hover:text-[#66B2E0] transition-colors duration-200"
+            className="lg:hidden text-[#005592] hover:text-[#66B2E0] transition-colors duration-200"
             aria-label="Toggle menu"
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -95,7 +95,7 @@ const Navbar: React.FC = () => {
                 className={`block py-2 transition-colors duration-200 ${
                   isActive(item.path)
                     ? "text-[#66B2E0]"
-                    : "text-[#0066AE] hover:text-[#66B2E0]"
+                    : "text-[#005592] hover:text-[#66B2E0]"
                 }`}
                 style={{ fontFamily: "Inter, sans-serif" }}
                 onClick={() => setIsOpen(false)}
@@ -105,7 +105,7 @@ const Navbar: React.FC = () => {
             ))}
             <Link
               to="/kontak"
-              className="block text-center bg-[#66B2E0] text-white px-6 py-2 rounded-full hover:bg-[#0066AE] transition-colors duration-200"
+              className="block text-center bg-[#66B2E0] text-white px-6 py-2 rounded-full hover:bg-[#005592] transition-colors duration-200"
               style={{ fontFamily: "Inter, sans-serif" }}
               onClick={() => setIsOpen(false)}
             >

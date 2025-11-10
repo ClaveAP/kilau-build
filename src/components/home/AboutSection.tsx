@@ -104,7 +104,7 @@ const AboutSection: React.FC = () => {
               style={{ fontFamily: "Roboto, sans-serif" }}
             >
               Menyediakan{" "}
-              <span className="text-[#0066AE]">
+              <span className="text-[#005592]">
                 Layanan Konstruksi & Interior
               </span>{" "}
               Berkualitas
@@ -139,7 +139,7 @@ const AboutSection: React.FC = () => {
                     whileHover={{ scale: 1.08 }}
                     transition={{ type: "spring", stiffness: 200 }}
                   >
-                    <h4 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0066AE]">
+                    <h4 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#005592]">
                       {count}
                       {stat.value.replace(/[0-9]/g, "")}
                     </h4>
@@ -158,7 +158,7 @@ const AboutSection: React.FC = () => {
               animate={controls}
               transition={{ delay: 0.8 }}
               onClick={handleNavigate}
-              className="bg-[#0066AE] text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-medium hover:bg-[#004d82] transition-colors duration-300"
+              className="bg-[#005592] text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-medium hover:bg-[#004d82] transition-colors duration-300"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
               Read More

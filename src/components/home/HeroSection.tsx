@@ -14,7 +14,7 @@ const HeroSection: React.FC = () => {
       />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-linear-to-r from-[#0066AE]/95 via-[#0066AE]/85 to-[#66B2E0]/20"></div>
+      <div className="absolute inset-0 bg-linear-to-r from-[#005592]/95 via-[#005592]/85 to-[#005592]/20"></div>
 
       {/* Content */}
       <div className="relative z-10 h-full flex items-center">

@@ -27,7 +27,7 @@ const FaqItem: React.FC<{
         </span>
         {/* Ikon Chevron */}
         <span
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0066AE] text-white ${
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#005592] text-white ${
             isOpen ? "rotate-180" : ""
           } transition-transform duration-300`}
         >
@@ -84,7 +84,7 @@ const FaqSection: React.FC = () => {
           className="text-3xl sm:text-4xl font-bold text-center mb-8"
           style={{ fontFamily: "Roboto, sans-serif" }}
         >
-          Frequently Asked <span className="text-[#0066AE]">Questions</span>
+          Frequently Asked <span className="text-[#005592]">Questions</span>
         </h2>
 
         {/* 🔽 PEMBUNGKUSNYA DIGANTI JADI INI 🔽 */}

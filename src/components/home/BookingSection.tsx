@@ -198,7 +198,7 @@ const BookingSection: React.FC = () => {
             </p>
             <button
               onClick={handleNavigate} // ✅ Navigasi
-              className="bg-white text-[#0066AE] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 shadow-lg"
+              className="bg-white text-[#005592] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 shadow-lg"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
               Read More
@@ -281,11 +281,11 @@ const BookingSection: React.FC = () => {
                             : booked
                             ? "bg-gray-100 text-gray-300 line-through cursor-not-allowed"
                             : today
-                            ? "bg-[#0066AE] text-white font-semibold"
+                            ? "bg-[#005592] text-white font-semibold"
                             : "text-gray-700 hover:bg-gray-50"
                         } ${
                           selectedDate === day && !booked && !today
-                            ? "ring-2 ring-[#0066AE]"
+                            ? "ring-2 ring-[#005592]"
                             : ""
                         }`}
                       >

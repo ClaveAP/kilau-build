@@ -18,7 +18,7 @@ const LocationSection: React.FC = () => {
           {/* Kolom Kiri: Teks */}
           <div className="text-left">
             <h2
-              className="text-3xl sm:text-4xl font-bold text-[#0066AE] mb-6"
+              className="text-3xl sm:text-4xl font-bold text-[#005592] mb-6"
               style={{ fontFamily: "Roboto, sans-serif" }}
             >
               Office Location
@@ -36,7 +36,7 @@ const LocationSection: React.FC = () => {
 
           {/* Kolom Kanan: Peta (Versi Gambar) */}
           <div className="flex justify-center md:justify-end">
-            <div className="w-full max-w-lg border-4 border-[#0066AE] rounded-2xl p-4 sm:p-6 shadow-lg">
+            <div className="w-full max-w-lg border-4 border-[#005592] rounded-2xl p-4 sm:p-6 shadow-lg">
               {/* Link Google Maps yang membungkus gambar peta */}
               <a
                 href={GmapsURL}

@@ -11,7 +11,7 @@ const HomeServicesSection: React.FC = () => {
         </h3>
         <h3 className="text-center text-gray-800 mb-8 sm:mb-12 text-lg sm:text-xl">
           Solusi{" "}
-          <span className="text-[#0066AE] font-bold ">
+          <span className="text-[#005592] font-bold ">
             Konstruksi untuk Semua
           </span>{" "}
           Kebutuhan Anda
@@ -30,7 +30,7 @@ const HomeServicesSection: React.FC = () => {
                 className="w-full h-48 object-cover"
               />
               <div className="p-6">
-                <h3 className="text-lg sm:text-xl font-bold mb-2 text-[#0066AE]">
+                <h3 className="text-lg sm:text-xl font-bold mb-2 text-[#005592]">
                   {service.title}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-4">
@@ -40,7 +40,7 @@ const HomeServicesSection: React.FC = () => {
                   href="https://wa.me/6287776360795?text=Halo%20admin%20Kilau,%20saya%20mau%20booking!"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full block text-center bg-[#0066AE] text-white py-2 rounded-lg hover:bg-[#004d82] transition-colors duration-300"
+                  className="w-full block text-center bg-[#005592] text-white py-2 rounded-lg hover:bg-[#004d82] transition-colors duration-300"
                 >
                   Booking Now
                 </a>

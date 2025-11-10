@@ -65,7 +65,7 @@ const TestimonialsSection: React.FC = () => {
           className="text-3xl sm:text-4xl font-bold text-center mb-12"
           style={{ fontFamily: '"Roboto", sans-serif' }}
         >
-          <span className="text-[#0066AE]">Ulasan</span>
+          <span className="text-[#005592]">Ulasan</span>
         </h2>
 
         {/* Wrapper untuk Slider + Tombol */}
@@ -79,7 +79,7 @@ const TestimonialsSection: React.FC = () => {
                   className="flex-none w-full sm:w-1/2 lg:w-1/4 pl-4"
                 >
                   {/* Card Testimoni (tetap sama) */}
-                  <div className="flex flex-col h-full border-2 border-[#0066AE] rounded-xl shadow-lg p-6 bg-white">
+                  <div className="flex flex-col h-full border-2 border-[#005592] rounded-xl shadow-lg p-6 bg-white">
                     <div className="flex-1">
                       <h3
                         className="text-xl font-bold text-center text-gray-800"
@@ -122,7 +122,7 @@ const TestimonialsSection: React.FC = () => {
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition duration-300 -ml-4"
           >
             <svg
-              className="w-6 h-6 text-[#0066AE]"
+              className="w-6 h-6 text-[#005592]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -142,7 +142,7 @@ const TestimonialsSection: React.FC = () => {
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition duration-300 -mr-4"
           >
             <svg
-              className="w-6 h-6 text-[#0066AE]"
+              className="w-6 h-6 text-[#005592]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -164,7 +164,7 @@ const TestimonialsSection: React.FC = () => {
               key={index}
               onClick={() => scrollTo(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === selectedIndex ? "bg-[#0066AE]" : "bg-gray-300"
+                index === selectedIndex ? "bg-[#005592]" : "bg-gray-300"
               }`}
             />
           ))}

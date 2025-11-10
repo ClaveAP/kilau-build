@@ -10,7 +10,7 @@ const FeaturesSection: React.FC = () => {
           className="text-2xl sm:text-3xl font-bold text-center mb-3"
           style={{ fontFamily: "Roboto, sans-serif" }}
         >
-          Keunggulan <span className="text-[#0066AE]">Kami</span>
+          Keunggulan <span className="text-[#005592]">Kami</span>
         </h2>
         <p className="text-center text-[#063172] mb-8 sm:mb-12 text-sm sm:text-base">
           Kami menawarkan layanan kontraktor yang transparan, profesional, dan
@@ -26,7 +26,7 @@ const FeaturesSection: React.FC = () => {
             >
               <div className="w-16 h-16 bg-blue-50 rounded-lg flex items-center justify-center mb-4">
                 <svg
-                  className="w-8 h-8 text-[#0066AE]"
+                  className="w-8 h-8 text-[#005592]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

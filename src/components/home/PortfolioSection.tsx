@@ -9,7 +9,7 @@ const HomePortfolioSection: React.FC = () => {
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-[#0066AE] mb-8 sm:mb-12">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[#005592] mb-8 sm:mb-12">
           Portofolio
         </h2>
 
@@ -35,7 +35,7 @@ const HomePortfolioSection: React.FC = () => {
         <div className="text-center mt-8 sm:mt-12">
           <Link
             to="/portofolio"
-            className="bg-[#0066AE] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#004d82] transition-colors duration-300"
+            className="bg-[#005592] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#004d82] transition-colors duration-300"
           >
             See more
           </Link>
