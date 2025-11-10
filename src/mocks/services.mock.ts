@@ -1,5 +1,7 @@
 // src/mocks/services.mock.ts
 import Layanan1 from "../assets/bangun dari 0.png"; // Kita pakai gambar asli
+import Layanan2 from "../assets/renovasi.png";
+import Layanan3 from "../assets/design.png";
 
 export const servicesData = [
   {
@@ -14,15 +16,13 @@ export const servicesData = [
     title: "Renovasi",
     description:
       "Perawatan dan renovasi rumah agar tetap kokoh, modern, dan nyaman.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1484154218962-a197022b5858?q=80&w=800",
+    imageUrl: Layanan2,
   },
   {
     id: 3,
     title: "Desain Interior",
     description:
       "Desain interior estetis dan fungsional untuk hunian yang indah dan nyaman.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=800",
+    imageUrl: Layanan3,
   },
 ];

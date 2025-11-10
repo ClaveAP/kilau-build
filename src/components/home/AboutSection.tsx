@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { statsData } from "../../mocks/about.mock";
+import { statsData } from "../../mocks/stats.mock";
+import tk from "../../assets/tk.webp";
 import { useNavigate } from "react-router-dom";
 import { motion, useAnimation, useInView, easeOut } from "framer-motion";
 import type { Variants } from "framer-motion"; // ✅ Type-only import (fix TS error)
@@ -85,7 +86,7 @@ const AboutSection: React.FC = () => {
             className="order-2 max-md:order-1"
           >
             <img
-              src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1000"
+              src={tk}
               alt="Construction Team"
               className="w-full h-[300px] sm:h-[400px] object-cover rounded-lg shadow-lg"
             />

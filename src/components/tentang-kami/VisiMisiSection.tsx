@@ -7,14 +7,14 @@ const VisiMisiSection: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Title */}
         <h2
-          className="text-2xl sm:text-3xl font-bold text-center text-[#005592] mb-3"
+          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-[#005592] mb-4"
           style={{ fontFamily: "Roboto, sans-serif" }}
         >
           Visi Misi
         </h2>
 
         {/* Visi Misi Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 max-w-5xl mx-auto mt-12 sm:mt-14 lg:mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 max-w-5xl mx-auto mt-16 sm:mt-20 lg:mt-24">
           {/* Visi Card */}
           <div className="bg-[#EBF4FA] rounded-3xl p-6 sm:p-8 lg:p-10 pt-12 sm:pt-14 shadow-sm hover:shadow-md transition-shadow duration-300 relative">
             {/* Icon */}
