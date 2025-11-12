@@ -1,8 +1,5 @@
 import React from "react";
-import logo from "../assets/logo.png";
-// 🔽 1. AKU TAMBAHIN INI 🔽
-//    Biar link-nya nggak nge-refresh halaman
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; //    Biar link-nya nggak nge-refresh halaman
 
 const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({
   href,
@@ -30,7 +27,11 @@ const Footer: React.FC = () => {
             <Link to="/" className="flex items-center gap-4 mb-6">
               {/* Logo with white background */}
               <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center p-3">
-                <img src={logo} alt="logo-kilaubuild" className="w-18 h-14 " />
+                <img
+                  src="/logo.png"
+                  alt="logo-kilaubuild"
+                  className="w-18 h-14 "
+                />
               </div>
               <span
                 className="text-3xl font-bold text-white"
@@ -200,7 +201,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Divider */}
-        {/* 🔽 REVISI: Garisnya dibikin lebih terang (putih/30) 🔽 */}
+        {/* REVISI: Garisnya dibikin lebih terang (putih/30) 🔽 */}
         <hr className="my-8 border-t border-white/30" />
 
         {/* Copyright */}

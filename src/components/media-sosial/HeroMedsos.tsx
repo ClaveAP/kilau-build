@@ -1,5 +1,5 @@
 import React from "react";
-import { instagramPosts } from "../mocks/instagram.mock";
+import { instagramPosts } from "../../mocks/instagram.mock";
 
 const MediaSosial: React.FC = () => {
   const handlePostClick = (url: string) => {
@@ -7,11 +7,11 @@ const MediaSosial: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section - KilauTips Header */}
-      <section className="pt-24 sm:pt-28 lg:pt-32 pb-8 sm:pb-10 lg:pb-12 bg-linear-to-b from-blue-50 to-white">
+    <div className="pt-20 min-h-screen bg-white">
+      <section className="py-12 sm:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
+          {/* Header */}
+          <div className="text-center mb-10 sm:mb-12 lg:mb-16">
             <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#005592] mb-4 sm:mb-6"
               style={{ fontFamily: "Roboto, sans-serif" }}
@@ -25,12 +25,7 @@ const MediaSosial: React.FC = () => {
               Inspirasi desain dan tips hunian dari Kilau Build
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* Instagram Posts Grid Section */}
-      <section className="py-8 sm:py-12 lg:py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Instagram Posts Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {instagramPosts.map((post) => (
@@ -41,13 +36,12 @@ const MediaSosial: React.FC = () => {
               >
                 {/* Card */}
                 <div className="bg-white border-2 border-gray-200 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                  {/* Image Container - Fixed Aspect Ratio */}
-                  <div className="relative w-full pt-[100%] overflow-hidden bg-gray-100">
+                  {/* Image Container */}
+                  <div className="relative aspect-square overflow-hidden">
                     <img
                       src={post.image}
                       alt={post.title}
-                      loading="lazy"
-                      className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
 
                     {/* Hover Overlay */}
@@ -58,7 +52,7 @@ const MediaSosial: React.FC = () => {
                   <div className="p-5 sm:p-6">
                     {/* Title */}
                     <h3
-                      className="text-lg sm:text-xl font-bold text-gray-900 mb-2 line-clamp-2 min-h-14 group-hover:text-[#005592] transition-colors"
+                      className="text-lg sm:text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#005592] transition-colors"
                       style={{ fontFamily: "Roboto, sans-serif" }}
                     >
                       {post.title}
@@ -66,7 +60,7 @@ const MediaSosial: React.FC = () => {
 
                     {/* Description */}
                     <p
-                      className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-1 min-h-6"
+                      className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-1"
                       style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       {post.description}
@@ -75,7 +69,7 @@ const MediaSosial: React.FC = () => {
                     {/* Footer - Instagram Icon + Date */}
                     <div className="flex items-center gap-2">
                       {/* Instagram Icon */}
-                      <div className="w-8 h-8 bg-linear-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] rounded-lg flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 bg-linear-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] rounded-lg flex items-center justify-center">
                         <svg
                           className="w-5 h-5 text-white"
                           fill="currentColor"

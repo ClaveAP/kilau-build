@@ -6,37 +6,45 @@ import { interiorDesignsData } from "../../mocks/portfolio-interior.mock";
 
 const Portofolio: React.FC = () => {
   return (
-    <main className="pt-20 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <main className="pt-20 min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 lg:pb-20">
         {/* ========== PROJECT DONE SECTION ========== */}
-        <section className="mb-16">
+        <section className="mb-16 sm:mb-20 lg:mb-24">
           <h2
-            className="text-3xl sm:text-4xl font-bold text-[#0066AE] text-center mb-8 sm:mb-12"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#005592] text-center mb-10 sm:mb-12 lg:mb-16"
             style={{ fontFamily: "Roboto, sans-serif" }}
           >
             Project Done
           </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {projectsDoneData.map((project) => (
               <div
                 key={project.id}
-                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
-                <img
-                  src={project.imageUrl}
-                  alt={project.title}
-                  className="w-full h-40 sm:h-48 object-cover"
-                  loading="lazy"
-                />
-                <div className="p-3 sm:p-4">
+                {/* Image Container - Fixed Aspect Ratio */}
+                <div className="relative w-full pt-[75%] overflow-hidden bg-gray-100">
+                  <img
+                    src={project.imageUrl}
+                    alt={project.title}
+                    loading="lazy"
+                    className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="p-4 sm:p-5">
                   <h3
-                    className="font-bold text-sm sm:text-base text-gray-800 mb-1"
+                    className="font-bold text-base sm:text-lg text-gray-900 mb-1 line-clamp-2 min-h-12"
                     style={{ fontFamily: "Roboto, sans-serif" }}
                   >
                     {project.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-gray-600">
+                  <p
+                    className="text-sm sm:text-base text-gray-600"
+                    style={{ fontFamily: "Inter, sans-serif" }}
+                  >
                     {project.year}
                   </p>
                 </div>
@@ -46,37 +54,43 @@ const Portofolio: React.FC = () => {
         </section>
 
         {/* ========== ONGOING PROJECT SECTION ========== */}
-        <section className="mb-16">
+        <section className="mb-16 sm:mb-20 lg:mb-24">
           <h2
-            className="text-3xl sm:text-4xl font-bold text-[#0066AE] text-center mb-8 sm:mb-12"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#005592] text-center mb-10 sm:mb-12 lg:mb-16"
             style={{ fontFamily: "Roboto, sans-serif" }}
           >
             Ongoing Project
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {ongoingProjectsData.map((project) => (
               <div
                 key={project.id}
-                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
-                <img
-                  src={project.imageUrl}
-                  alt={project.title}
-                  className="w-full h-48 sm:h-56 object-cover"
-                  loading="lazy"
-                />
-                <div className="p-4">
+                {/* Image Container - Fixed Aspect Ratio */}
+                <div className="relative w-full pt-[66.67%] overflow-hidden bg-gray-100">
+                  <img
+                    src={project.imageUrl}
+                    alt={project.title}
+                    loading="lazy"
+                    className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="p-4 sm:p-5">
                   <h3
-                    className="font-bold text-base sm:text-lg text-gray-800 mb-2"
+                    className="font-bold text-base sm:text-lg text-gray-900 mb-3 line-clamp-2 min-h-12"
                     style={{ fontFamily: "Roboto, sans-serif" }}
                   >
                     {project.title}
                   </h3>
 
-                  <div className="flex items-center gap-2 mb-3 text-gray-600">
+                  {/* Location */}
+                  <div className="flex items-center gap-2 mb-4 text-gray-600">
                     <svg
-                      className="w-4 h-4"
+                      className="w-4 h-4 shrink-0"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -86,23 +100,33 @@ const Portofolio: React.FC = () => {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-xs sm:text-sm">
+                    <span
+                      className="text-sm sm:text-base line-clamp-1"
+                      style={{ fontFamily: "Inter, sans-serif" }}
+                    >
                       {project.location}
                     </span>
                   </div>
 
+                  {/* Progress Bar */}
                   <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs sm:text-sm text-gray-600">
+                    <div className="flex justify-between items-center mb-2">
+                      <span
+                        className="text-sm text-gray-600"
+                        style={{ fontFamily: "Inter, sans-serif" }}
+                      >
                         Progress
                       </span>
-                      <span className="text-sm sm:text-base font-bold text-[#0066AE]">
+                      <span
+                        className="text-base font-bold text-[#005592]"
+                        style={{ fontFamily: "Roboto, sans-serif" }}
+                      >
                         {project.completionPercentage}%
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 sm:h-2.5">
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
                       <div
-                        className="bg-[#0066AE] h-2 sm:h-2.5 rounded-full transition-all duration-300"
+                        className="bg-[#005592] h-2.5 rounded-full transition-all duration-300"
                         style={{ width: `${project.completionPercentage}%` }}
                       />
                     </div>
@@ -116,27 +140,32 @@ const Portofolio: React.FC = () => {
         {/* ========== DESAIN INTERIOR SECTION ========== */}
         <section>
           <h2
-            className="text-3xl sm:text-4xl font-bold text-[#0066AE] text-center mb-8 sm:mb-12"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#005592] text-center mb-10 sm:mb-12 lg:mb-16"
             style={{ fontFamily: "Roboto, sans-serif" }}
           >
             Design Interior
           </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {interiorDesignsData.map((project) => (
               <div
                 key={project.id}
-                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
-                <img
-                  src={project.imageUrl}
-                  alt={project.title}
-                  className="w-full h-40 sm:h-48 object-cover"
-                  loading="lazy"
-                />
-                <div className="p-3 sm:p-4">
+                {/* Image Container - Fixed Aspect Ratio */}
+                <div className="relative w-full pt-[75%] overflow-hidden bg-gray-100">
+                  <img
+                    src={project.imageUrl}
+                    alt={project.title}
+                    loading="lazy"
+                    className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="p-4 sm:p-5">
                   <h3
-                    className="font-bold text-sm sm:text-base text-gray-800"
+                    className="font-bold text-base sm:text-lg text-gray-900 line-clamp-2 min-h-12"
                     style={{ fontFamily: "Roboto, sans-serif" }}
                   >
                     {project.title}

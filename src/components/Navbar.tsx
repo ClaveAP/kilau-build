@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import Logo from "../assets/logo.png"; // Impor logo sebagai gambar
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +38,11 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={Logo} alt="Kilau Build Logo" className="w-14 h-14 mr-3" />
+            <img
+              src="/logo.png"
+              alt="Kilau Build Logo"
+              className="w-14 h-14 mr-3"
+            />
             <span
               className="text-2xl font-bold text-[#005592]"
               style={{ fontFamily: "Roboto, sans-serif" }}
