@@ -1,12 +1,14 @@
 import React from "react";
+import HeroKontak from "../components/kontak/HeroKontak";
+import HubungiKami from "../components/kontak/HubungiKami";
+import Lokasi from "../components/kontak/Lokasi";
 
 const Kontak: React.FC = () => {
   return (
     <div className="pt-20 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold text-[#0066AE] mb-6">Kontak</h1>
-        <p className="text-lg text-gray-700">Konten halaman Kontak...</p>
-      </div>
+      <HeroKontak />
+      <HubungiKami />
+      <Lokasi />
     </div>
   );
 };

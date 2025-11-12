@@ -1,21 +1,25 @@
-// src/components/home/LocationSection.tsx (Versi Gambar Lokal)
-
 import React from "react";
 
-// 🔽 1. IMPORT GAMBAR LOKASI.JPG KAMU DARI ASSETS
-import BgLokasi from "../../assets/lokasi.jpg"; // Path dari 'src/components/home' ke 'src/assets'
+// 🔽 1. GANTI LINK GOOGLE MAPS EMBED-NYA DI SINI 🔽
+// Cara mendapatkan URL:
+// 1. Buka Google Maps.
+// 2. Cari lokasi Anda.
+// 3. Klik "Share" (Bagikan).
+// 4. Pilih tab "Embed a map" (Sematkan peta).
+// 5. Klik "Copy HTML".
+// 6. Ambil HANYA URL yang ada di dalam src="..." (yang ada di antara tanda kutip)
+const MAP_EMBED_URL =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.602838692637!2d106.80404899999999!3d-6.4450115!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69e92ce61a47ef%3A0x4a71e1bb8f782d09!2sKILAU%20BUILD%20%7C%20Jasa%20Konstruksi%2C%20Interior%2C%20dan%20Design%20Terpercaya!5e0!3m2!1sen!2sid!4v1762973176968!5m2!1sen!2sid%22%20width=%22600%22%20height=%22450%22%20style=%22border:0;%22%20allowfullscreen=%22%22%20loading=%22lazy%22%20referrerpolicy=%22no-referrer-when-downgrade"; // GANTI DENGAN URL EMBED GOOGLE MAPS ANDA
 
-// 🔽 2. GANTI LINK GOOGLE MAPS-NYA DI SINI
-const GmapsURL = "https://maps.app.goo.gl/ABCDEFG12345";
-
-// (Variabel Unsplash sudah dihapus)
+// (Import BgLokasi dan GmapsURL sudah dihapus karena tidak dipakai lagi)
 
 const LocationSection: React.FC = () => {
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Layout sudah responsif (md:grid-cols-2) */}
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
-          {/* Kolom Kiri: Teks */}
+          {/* Kolom Kiri: Teks (Tidak berubah) */}
           <div className="text-left">
             <h2
               className="text-3xl sm:text-4xl font-bold text-[#005592] mb-6"
@@ -34,49 +38,25 @@ const LocationSection: React.FC = () => {
             </p>
           </div>
 
-          {/* Kolom Kanan: Peta (Versi Gambar) */}
+          {/* Kolom Kanan: Peta (Versi Embed) */}
           <div className="flex justify-center md:justify-end">
+            {/* Frame Peta (Tidak berubah) */}
             <div className="w-full max-w-lg border-4 border-[#005592] rounded-2xl p-4 sm:p-6 shadow-lg">
-              {/* Link Google Maps yang membungkus gambar peta */}
-              <a
-                href={GmapsURL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
-              >
-                {/* 🔽 3. DIV INI SEKARANG PAKAI BACKGROUND DARI 'lokasi.jpg' 🔽 */}
-                <div
-                  className="relative aspect-4/3 flex items-center justify-center"
-                  style={{
-                    backgroundImage: `url(${BgLokasi})`, // <-- Menggunakan gambar import
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                >
-                  {/* Overlay gelap tipis agar tulisan terbaca */}
-                  <div className="absolute inset-0 bg-black/20"></div>
+              {/* 🔽 2. BAGIAN INI DIGANTI DARI GAMBAR MENJADI IFRAME 🔽 */}
+              {/* Kontainer ini menjaga iframe tetap responsif (aspect-4/3) dan rounded */}
+              <div className="block rounded-lg overflow-hidden aspect-4/3">
+                <iframe
+                  src={MAP_EMBED_URL}
+                  className="w-full h-full border-0" // border-0 penting untuk iframe
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Peta Lokasi Kantor"
+                ></iframe>
+              </div>
+              {/* 🔽 Akhir dari bagian yang diganti 🔽 */}
 
-                  {/* Ikon Pin & Teks (tetap di atas) */}
-                  <div className="relative text-center z-10">
-                    <svg
-                      className="w-10 h-10 text-white mx-auto" // Ganti jadi putih biar kontras
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="mt-1 text-sm font-medium text-gray-800 bg-white/90 px-2 py-0.5 rounded shadow">
-                      Lokasi Kami
-                    </span>
-                  </div>
-                </div>
-              </a>
-
-              {/* Teks Alamat di bawah peta */}
+              {/* Teks Alamat di bawah peta (Tidak berubah) */}
               <p
                 className="text-center text-sm sm:text-base text-gray-700 mt-4"
                 style={{ fontFamily: "Inter, sans-serif" }}
