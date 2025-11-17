@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ Tambah ini
+import { useNavigate } from "react-router-dom";
 
 // --- Konfigurasi API Google ---
 declare global {
@@ -15,7 +15,7 @@ const DISCOVERY_DOC =
   "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
 
 const BookingSection: React.FC = () => {
-  const navigate = useNavigate(); // ✅ Inisialisasi navigasi
+  const navigate = useNavigate();
   const [events, setEvents] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -27,7 +27,7 @@ const BookingSection: React.FC = () => {
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://apis.google.com/js/api.js";
-    script.async = true; // optional, biar non-blocking
+    script.async = true;
     script.onload = () => initializeGapiClient();
     script.onerror = () => {
       setError("Gagal memuat script Google. Cek koneksi atau adblocker.");
@@ -36,7 +36,6 @@ const BookingSection: React.FC = () => {
 
     document.body.appendChild(script);
 
-    // ✅ return harus fungsi cleanup (bukan HTML element)
     return () => {
       document.body.removeChild(script);
     };
@@ -117,7 +116,11 @@ const BookingSection: React.FC = () => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startOffset = (firstDay.getDay() + 6) % 7;
+
+    // ✅ PERUBAHAN UTAMA: Day 0=Minggu, 1=Senin, dst.
+    // Jika hari pertama bulan adalah Minggu (0), offsetnya 0.
+    // Jika hari pertama bulan adalah Senin (1), offsetnya 1, dst.
+    const startOffset = firstDay.getDay();
 
     const days: (number | null)[] = [];
     for (let i = 0; i < startOffset; i++) days.push(null);
@@ -154,12 +157,13 @@ const BookingSection: React.FC = () => {
 
   // --- 5. Navigasi ---
   const handleNavigate = () => {
-    navigate("/konsultasi-booking"); // ✅ Arahkan ke halaman KonsultasiBooking
-    window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ Scroll ke atas
+    navigate("/konsultasi-booking");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // --- 6. Render UI ---
-  const weekDays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+  // ✅ PERUBAHAN: Minggu (Su) diletakkan di awal
+  const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
   const days = getDaysInMonth(currentMonth);
 
   return (
@@ -197,7 +201,7 @@ const BookingSection: React.FC = () => {
               tim kami.
             </p>
             <button
-              onClick={handleNavigate} // ✅ Navigasi
+              onClick={handleNavigate}
               className="bg-white text-[#005592] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 shadow-lg"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
@@ -246,10 +250,13 @@ const BookingSection: React.FC = () => {
 
               {/* Weekdays */}
               <div className="grid grid-cols-7 gap-1 mb-2">
-                {weekDays.map((day) => (
+                {weekDays.map((day, index) => (
                   <div
                     key={day}
-                    className="text-center text-xs font-medium text-gray-500 py-2"
+                    className={`text-center text-xs font-medium py-2 ${
+                      // ✅ PERUBAHAN: Tambah warna merah jika index 0 (Minggu)
+                      index === 0 ? "text-red-500" : "text-gray-500"
+                    }`}
                   >
                     {day}
                   </div>
@@ -270,6 +277,17 @@ const BookingSection: React.FC = () => {
                   {days.map((day, i) => {
                     const booked = isDateBooked(day);
                     const today = isToday(day);
+
+                    // Hitung indeks hari dalam seminggu (0=Minggu, 6=Sabtu)
+                    // Ini digunakan untuk menentukan warna merah pada hari Minggu
+                    const dayOfWeek = day
+                      ? new Date(
+                          currentMonth.getFullYear(),
+                          currentMonth.getMonth(),
+                          day
+                        ).getDay()
+                      : null;
+
                     return (
                       <button
                         key={i}
@@ -282,6 +300,8 @@ const BookingSection: React.FC = () => {
                             ? "bg-gray-100 text-gray-300 line-through cursor-not-allowed"
                             : today
                             ? "bg-[#005592] text-white font-semibold"
+                            : dayOfWeek === 0
+                            ? "text-red-500 hover:bg-red-50"
                             : "text-gray-700 hover:bg-gray-50"
                         } ${
                           selectedDate === day && !booked && !today

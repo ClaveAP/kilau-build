@@ -114,7 +114,10 @@ const BookingKalendar: React.FC = () => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startOffset = (firstDay.getDay() + 6) % 7;
+
+    // --- PERUBAHAN DI SINI ---
+    // Menggunakan getDay() secara langsung (0=Minggu, 1=Senin, dst.)
+    const startOffset = firstDay.getDay();
 
     const days: (number | null)[] = [];
     for (let i = 0; i < startOffset; i++) days.push(null);
@@ -159,7 +162,8 @@ const BookingKalendar: React.FC = () => {
   };
 
   // --- 6. Render UI ---
-  const weekDays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+  // --- PERUBAHAN DI SINI ---
+  const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
   const days = getDaysInMonth(currentMonth);
 
   return (
@@ -239,7 +243,10 @@ const BookingKalendar: React.FC = () => {
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="text-center text-xs sm:text-sm font-medium text-gray-500 py-2"
+                    // --- PERUBAHAN DI SINI ---
+                    className={`text-center text-xs sm:text-sm font-medium py-2 ${
+                      day === "Su" ? "text-red-500" : "text-gray-500"
+                    }`}
                     style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {day}
@@ -261,11 +268,15 @@ const BookingKalendar: React.FC = () => {
                   {days.map((day, i) => {
                     const booked = isDateBooked(day);
                     const today = isToday(day);
+                    // --- PERUBAHAN DI SINI ---
+                    const isSunday = day ? i % 7 === 0 : false;
+
                     return (
                       <button
                         key={i}
                         onClick={() => day && !booked && setSelectedDate(day)}
                         disabled={!day || booked}
+                        // --- PERUBAHAN DI SINI ---
                         className={`aspect-square rounded-lg text-sm sm:text-base flex items-center justify-center transition-all font-medium ${
                           !day
                             ? "invisible"
@@ -273,7 +284,9 @@ const BookingKalendar: React.FC = () => {
                             ? "bg-gray-100 text-gray-300 line-through cursor-not-allowed"
                             : today
                             ? "bg-[#005592] text-white font-bold shadow-md"
-                            : "text-gray-700 hover:bg-blue-50 hover:text-[#005592]"
+                            : `hover:bg-blue-50 hover:text-[#005592] ${
+                                isSunday ? "text-red-500" : "text-gray-700"
+                              }`
                         } ${
                           selectedDate === day && !booked && !today
                             ? "ring-2 ring-[#005592] bg-blue-50"
