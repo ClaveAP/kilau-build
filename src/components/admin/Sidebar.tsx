@@ -165,14 +165,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   );
 
   const menuItems = [
-    { path: "/dashboard", label: "Beranda", icon: HomeIcon },
-    { path: "/kalender", label: "Kalender", icon: CalendarIcon },
-    { path: "/statistik", label: "Statistik", icon: StatistikIcon },
-    { path: "/portofolio", label: "Portofolio", icon: PortofolioIcon },
-    { path: "/testimoni", label: "Testimoni", icon: TestimoniIcon },
-    { path: "/kontak", label: "Kontak", icon: KontakIcon },
-    { path: "/faq", label: "FAQ", icon: FAQIcon },
-    { path: "/media-sosial", label: "Media Sosial", icon: MediaSosialIcon },
+    { path: "/admin/dashboard", label: "Beranda", icon: HomeIcon },
+    { path: "/admin/kalender", label: "Kalender", icon: CalendarIcon },
+    { path: "/admin/statistik", label: "Statistik", icon: StatistikIcon },
+    { path: "/admin/portofolio", label: "Portofolio", icon: PortofolioIcon },
+    { path: "/admin/testimoni", label: "Testimoni", icon: TestimoniIcon },
+    { path: "/admin/kontak", label: "Kontak", icon: KontakIcon },
+    { path: "/admin/faq", label: "FAQ", icon: FAQIcon },
+    { path: "/admin/media-sosial", label: "Media Sosial", icon: MediaSosialIcon },
   ];
 
   const isActive = (path: string) => {

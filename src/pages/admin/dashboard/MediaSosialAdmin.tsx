@@ -5,7 +5,7 @@ import {
   type MediaSosialItem,
 } from "../../../contexts/MediaSosialContext";
 
-const MediaSosial = () => {
+const MediaSosialAdmin = () => {
   const { mediaSosialData, setMediaSosialData } = useMediaSosial();
   // Temporary state untuk menyimpan perubahan sebelum di-save
   const [tempData, setTempData] = useState<MediaSosialItem[]>(mediaSosialData);
@@ -978,4 +978,4 @@ const MediaSosial = () => {
   );
 };
 
-export default MediaSosial;
+export default MediaSosialAdmin;

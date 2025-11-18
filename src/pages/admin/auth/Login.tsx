@@ -23,7 +23,7 @@ const Login = () => {
     if (formData.email && formData.password) {
       // Nanti bisa diganti validasi ke backend
       console.log("Login sukses:", formData);
-      navigate("/dashboard"); // Pindah ke dashboard
+      navigate("/admin/dashboard"); // Pindah ke dashboard
     } else {
       alert("Isi email/username dan password dulu");
     }

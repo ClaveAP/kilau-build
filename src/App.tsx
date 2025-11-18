@@ -9,7 +9,6 @@ import ScrollTop from "./components/ScrollTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
-// ... import halaman-halaman (sama seperti sebelumnya) ...
 import Home from "./pages/Home";
 import TentangKami from "./pages/TentangKami";
 import LayananKami from "./pages/LayananKami";
@@ -31,25 +30,26 @@ import { SurveyProvider } from "./contexts/SurveyKalenderContext";
 import { PortofolioProvider } from "./contexts/PortofolioContext";
 import { MediaSosialProvider } from "./contexts/MediaSosialContext";
 import { BerandaPortofolioProvider } from "./contexts/BerandaPortofolioContext";
+import KontakAdmin from "./pages/admin/dashboard/KontakAdmin";
+import MediaSosialAdmin from "./pages/admin/dashboard/MediaSosialAdmin";
 
 // 1. Buat Layout Khusus Public (Ada Navbar & Footer)
 const PublicLayout = () => {
   return (
     <>
       <Navbar />
-      <Outlet /> {/* Konten halaman public akan muncul di sini */}
+      <Outlet />
       <Footer />
     </>
   );
 };
 
-// 2. Buat Layout Khusus Admin (Tanpa Navbar Public)
+// 2. Buat Layout Khusus Admin
 const AdminLayout = () => {
   return (
     <div className="admin-layout">
-      {/* Nanti bisa tambah Sidebar Admin disini */}
       <div className="p-4">
-        <Outlet /> {/* Konten dashboard akan muncul di sini */}
+        <Outlet/>
       </div>
     </div>
   );
@@ -119,11 +119,11 @@ function App() {
                             <Route path="statistik" element={<Statistik />} />
                             <Route path="portofolio" element={<Portofolio />} />
                             <Route path="testimoni" element={<Testimoni />} />
-                            <Route path="kontak" element={<Kontak />} />
+                            <Route path="kontak" element={<KontakAdmin />} />
                             <Route path="faq" element={<FAQ />} />
                             <Route
                               path="media-sosial"
-                              element={<MediaSosial />}
+                              element={<MediaSosialAdmin />}
                             />
                           </Route>
                         </Routes>

@@ -3,7 +3,7 @@ import DashboardLayout from "../../../layouts/DashboardLayout";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { useKontak, type KontakItem } from "../../../contexts/KontakContext";
 
-const Kontak = () => {
+const KontakAdmin = () => {
   const { kontakData, setKontakData } = useKontak();
 
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -1214,4 +1214,4 @@ const Kontak = () => {
   );
 };
 
-export default Kontak;
+export default KontakAdmin;
