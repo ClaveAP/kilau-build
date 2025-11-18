@@ -1,5 +1,5 @@
 // src/mocks/testimonials.mock.ts
-// Ini adalah "data palsu" kita untuk Ulasan
+// Ini adalah "data palsu" untuk Ulasan
 
 export const testimonialsData = [
   {

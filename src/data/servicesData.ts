@@ -1,5 +1,5 @@
-// src/mocks/services.mock.ts
-import Layanan1 from "../assets/bangun dari 0.png"; // Kita pakai gambar asli
+// src/data/servicesData.ts
+import Layanan1 from "../assets/bangun dari 0.png";
 import Layanan2 from "../assets/renovasi.png";
 import Layanan3 from "../assets/design.png";
 
@@ -9,7 +9,7 @@ export const servicesData = [
     title: "Pembangunan Baru",
     description:
       "Pembangunan rumah hunian baru dengan perencanaan detail dan tenaga profesional.",
-    imageUrl: Layanan1, // <-- Gambar dari assets
+    imageUrl: Layanan1,
   },
   {
     id: 2,

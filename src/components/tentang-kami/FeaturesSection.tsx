@@ -1,6 +1,6 @@
 // src/components/tentangkami/FeaturesSection.tsx
 import React from "react";
-import { featuresData } from "../../mocks/features.mock"; // bisa pakai data dummy yg sama
+import { featuresData } from "../../data/featuresData";
 
 const FeaturesSection: React.FC = () => {
   return (

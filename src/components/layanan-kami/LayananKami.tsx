@@ -1,6 +1,31 @@
-// src/components/home/LayananKami.tsx
 import React from "react";
-import { servicesData } from "../../mocks/services.mock"; // <-- Panggil data palsu
+import Layanan1 from "../../assets/bangun dari 0.png";
+import Layanan2 from "../../assets/renovasi.png";
+import Layanan3 from "../../assets/design.png";
+
+const servicesData = [
+  {
+    id: 1,
+    title: "Pembangunan Baru",
+    description:
+      "Pembangunan rumah hunian baru dengan perencanaan detail dan tenaga profesional.",
+    imageUrl: Layanan1,
+  },
+  {
+    id: 2,
+    title: "Renovasi",
+    description:
+      "Perawatan dan renovasi rumah agar tetap kokoh, modern, dan nyaman.",
+    imageUrl: Layanan2,
+  },
+  {
+    id: 3,
+    title: "Desain Interior",
+    description:
+      "Desain interior estetis dan fungsional untuk hunian yang indah dan nyaman.",
+    imageUrl: Layanan3,
+  },
+];
 
 const LayananKami: React.FC = () => {
   return (
@@ -17,7 +42,6 @@ const LayananKami: React.FC = () => {
           Kebutuhan Anda
         </h3>
 
-        {/* DINAMIS DARI MOCK */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {servicesData.map((service) => (
             <div
