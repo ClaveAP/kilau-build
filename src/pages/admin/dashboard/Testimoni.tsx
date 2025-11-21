@@ -2,17 +2,8 @@ import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
 
-// Swiper imports
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
-// import "swiper/css";
-// import "swiper/css/navigation";
-// import "swiper/css/pagination";
-
-// URL API
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
-// Interface Data
 export interface TestimoniData {
   id: number;
   name: string;
@@ -20,7 +11,6 @@ export interface TestimoniData {
   rating: number;
 }
 
-// --- KOMPONEN BINTANG ---
 const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
   return (
     <div className="flex justify-center">
@@ -38,7 +28,6 @@ const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
   );
 };
 
-// --- KOMPONEN MODAL ---
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -159,12 +148,10 @@ const TestimoniModal: React.FC<ModalProps> = ({
   );
 };
 
-// --- MAIN COMPONENT ---
 const Testimoni = () => {
   const [testimonials, setTestimonials] = useState<TestimoniData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // --- FETCH DATA ---
   const fetchTestimonials = async () => {
     setIsLoading(true);
     try {
@@ -214,13 +201,11 @@ const Testimoni = () => {
     setIsModalOpen(true);
   };
 
-  // --- SAVE DATA (CREATE/UPDATE) ---
   const handleSaveModal = async (data: {
     name: string;
     text: string;
     rating: number;
   }) => {
-    // Ambil Token
     const token = localStorage.getItem("admin_token");
     const authConfig = {
       headers: {
@@ -237,7 +222,6 @@ const Testimoni = () => {
 
     try {
       if (editingId) {
-        // UPDATE
         await axios.put(
           `${API_BASE_URL}/testimoni/${editingId}`,
           payload,
@@ -248,7 +232,6 @@ const Testimoni = () => {
           message: "Testimoni berhasil diperbarui!",
         });
       } else {
-        // CREATE
         await axios.post(`${API_BASE_URL}/testimoni`, payload, authConfig);
         setSuccessModal({
           isOpen: true,
@@ -260,25 +243,14 @@ const Testimoni = () => {
       setEditingId(null);
     } catch (error: any) {
       console.error("Error saving:", error);
-
-      // Menampilkan Pesan Error yang Spesifik
       let errorMessage = "Gagal menyimpan data.";
-      if (error.response) {
-        if (error.response.status === 401) {
-          errorMessage = "Sesi habis. Silakan Logout dan Login ulang.";
-        } else if (error.response.data && error.response.data.message) {
-          // Menampilkan pesan validasi dari Laravel (misal: "The name field is required.")
-          errorMessage = error.response.data.message;
-        }
-      } else if (error.request) {
-        errorMessage = "Tidak dapat terhubung ke server. Cek koneksi backend.";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
       }
-
       setErrorModal({ isOpen: true, message: errorMessage });
     }
   };
 
-  // --- DELETE DATA ---
   const confirmDelete = async () => {
     const token = localStorage.getItem("admin_token");
     const authConfig = { headers: { Authorization: `Bearer ${token}` } };
@@ -298,7 +270,7 @@ const Testimoni = () => {
         console.error("Error deleting:", error);
         setErrorModal({
           isOpen: true,
-          message: "Gagal menghapus data. Cek Login Anda.",
+          message: "Gagal menghapus data.",
         });
       }
     }
@@ -315,109 +287,53 @@ const Testimoni = () => {
   return (
     <DashboardLayout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-center mb-6 text-primary-blue">
-          Ringkasan Data Testimoni
-        </h1>
+        {/* Header Halaman */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-[#0066AE]">
+            Ringkasan Data Testimoni
+          </h1>
+        </div>
 
         {isLoading && testimonials.length === 0 && (
           <p className="text-center text-gray-400">Memuat data...</p>
         )}
 
-        <div className="py-8 border-t-2 border-b-2 border-gray-200">
+        <div className="py-4">
           {totalItems > 0 ? (
-            <div className="relative px-12">
-              <Swiper
-                modules={[Navigation, Pagination]}
-                spaceBetween={20}
-                slidesPerView={1}
-                breakpoints={{
-                  640: { slidesPerView: 2, spaceBetween: 16 },
-                  768: { slidesPerView: 3, spaceBetween: 18 },
-                  1024: { slidesPerView: 4, spaceBetween: 20 },
-                }}
-                navigation={
-                  totalItems > 4
-                    ? {
-                        nextEl: ".testimoni-page-next-btn",
-                        prevEl: ".testimoni-page-prev-btn",
-                      }
-                    : false
-                }
-                pagination={totalItems > 4 ? { clickable: true } : false}
-                className="testimoni-swiper"
-              >
-                {testimonials.map((testimoni) => (
-                  <SwiperSlide key={testimoni.id}>
-                    <div
-                      className="rounded-lg p-4 text-center hover:shadow-lg transition-all hover:scale-105 h-full flex flex-col bg-white"
-                      style={{
-                        border: "2px solid #e5e7eb",
-                        boxShadow:
-                          "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-                      }}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {testimonials.map((testimoni) => (
+                <div
+                  key={testimoni.id}
+                  className="bg-white rounded-lg p-4 text-center hover:shadow-lg transition-all hover:scale-[1.02] flex flex-col h-full border-2 border-gray-200 shadow-sm"
+                >
+                  <h3 className="font-semibold pb-2 mb-3 border-b border-gray-100">
+                    {testimoni.name}
+                  </h3>
+
+                  <p className="text-sm text-gray-600 mb-3 min-h-[60px] flex-grow">
+                    {testimoni.text}
+                  </p>
+
+                  <div className="flex justify-center mb-3">
+                    <StarRating rating={testimoni.rating} />
+                  </div>
+
+                  <div className="flex justify-center space-x-2 mt-auto">
+                    <button
+                      className="bg-red-500 text-white text-sm px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+                      onClick={() => handleDelete(testimoni.id)}
                     >
-                      <h3
-                        className="font-semibold pb-2 mb-3"
-                        style={{ borderBottom: "1px solid #f3f4f6" }}
-                      >
-                        {testimoni.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-3 min-h-[60px] flex-grow">
-                        {testimoni.text}
-                      </p>
-                      <div className="flex justify-center mb-3">
-                        <StarRating rating={testimoni.rating} />
-                      </div>
-                      <div className="flex justify-center space-x-2">
-                        <button
-                          className="bg-red-500 text-white text-sm px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
-                          onClick={() => handleDelete(testimoni.id)}
-                        >
-                          Hapus
-                        </button>
-                        <button
-                          className="bg-[#0066AE] text-white text-sm px-3 py-1 rounded-md hover:bg-[#005a9e] transition-colors"
-                          onClick={() => handleEdit(testimoni.id)}
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-              {totalItems > 4 && (
-                <>
-                  <button className="testimoni-page-prev-btn absolute left-0 top-[35%] -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg bg-primary-blue">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                      Hapus
+                    </button>
+                    <button
+                      className="bg-[#0066AE] text-white text-sm px-3 py-1 rounded-md hover:bg-[#005a9e] transition-colors"
+                      onClick={() => handleEdit(testimoni.id)}
                     >
-                      <path d="M15 18l-6-6 6-6" />
-                    </svg>
-                  </button>
-                  <button className="testimoni-page-next-btn absolute right-0 top-[35%] -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg bg-primary-blue">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </button>
-                </>
-              )}
+                      Edit
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">
@@ -426,6 +342,7 @@ const Testimoni = () => {
           )}
         </div>
 
+        {/*  Tambah */}
         <div
           style={{
             display: "flex",

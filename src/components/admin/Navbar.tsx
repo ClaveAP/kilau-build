@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { logout } from "../../utils/auth";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -13,6 +14,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [adminName, setAdminName] = useState("Admin");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Get admin info from localStorage
   useEffect(() => {
@@ -42,28 +44,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem("admin_token");
-
-      // Call logout API
-      await axios.post(
-        `${API_BASE_URL}/logout`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      // Clear localStorage and redirect
-      localStorage.removeItem("admin_token");
-      localStorage.removeItem("admin_user");
-      navigate("/admin/login");
-    }
+  const handleLogout = () => {
+    logout();
   };
 
   const handleChangePassword = () => {
@@ -344,7 +326,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
               {/* Logout */}
               <button
-                onClick={handleLogout}
+                onClick={() => setShowLogoutModal(true)}
                 style={{
                   width: "100%",
                   padding: "0.75rem 1rem",
@@ -386,6 +368,60 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           </div>
         )}
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] animate-fadeIn"
+          onClick={() => setShowLogoutModal(false)}
+        >
+          <div
+            className="bg-[#0066AE] rounded-xl shadow-2xl p-10 w-full max-w-md mx-4 animate-slideUp z-[10000]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Icon - White circle with exclamation mark */}
+            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-white border-4 border-white/30">
+              <svg
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#0066AE"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+
+            {/* Text */}
+            <h3 className="text-2xl font-bold text-center text-white mb-10">
+              Apakah anda yakin ingin Log Out?
+            </h3>
+
+            {/* Buttons */}
+            <div className="flex gap-4 justify-center">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-10 py-3 bg-[#0066AE] hover:bg-[#005a9e] text-white rounded-lg font-semibold text-lg transition-colors shadow-lg"
+              >
+                Ya
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowLogoutModal(false)}
+                className="px-10 py-3 bg-[#005a9e] hover:bg-[#004d87] text-white rounded-lg font-semibold text-lg transition-colors shadow-lg"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CSS Animation */}
       <style>{`

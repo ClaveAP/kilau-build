@@ -5,7 +5,7 @@
  * @returns {boolean}
  */
 export const isAuthenticated = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   return !!token;
 };
 
@@ -14,22 +14,22 @@ export const isAuthenticated = () => {
  * @returns {string|null}
  */
 export const getToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 };
 
 /**
  * Set authentication token
  * @param {string} token
  */
-export const setToken = (token) => {
-  localStorage.setItem('token', token);
+export const setToken = (token: any) => {
+  localStorage.setItem("token", token);
 };
 
 /**
  * Remove authentication token
  */
 export const removeToken = () => {
-  localStorage.removeItem('token');
+  localStorage.removeItem("token");
 };
 
 /**
@@ -37,6 +37,5 @@ export const removeToken = () => {
  */
 export const logout = () => {
   removeToken();
-  window.location.href = '/login';
+  window.location.href = "/login";
 };
-
