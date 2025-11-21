@@ -1,11 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { statsData } from "../../mocks/stats.mock";
+import axios from "axios";
+
+// Interface lokal
+interface StatItem {
+  id: number;
+  label: string;
+  value: string;
+}
 
 const StatsTentangKami: React.FC = () => {
   const [hasStartedCount, setHasStartedCount] = useState(false);
 
+  // State Data Real
+  const [statsData, setStatsData] = useState<StatItem[]>([
+    { id: 1, label: "Tahun Pengalaman", value: "0+" },
+    { id: 2, label: "Proyek Selesai", value: "0+" },
+    { id: 3, label: "Klien Puas", value: "0+" },
+    { id: 4, label: "Kota", value: "0+" }, // Label sesuaikan UI
+  ]);
+
   useEffect(() => {
     setHasStartedCount(true);
+
+    // Fetch Data API
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/statistic");
+        if (response.data.success && response.data.data.length > 0) {
+          const data = response.data.data[0];
+          setStatsData([
+            { id: 1, label: "Tahun Pengalaman", value: data.tahun_pengalaman },
+            { id: 2, label: "Proyek Selesai", value: data.proyek_selesai },
+            { id: 3, label: "Klien Puas", value: data.klien_puas },
+            { id: 4, label: "Kota", value: data.sebaran_kota }, // Mapping 'sebaran_kota' -> 'Kota'
+          ]);
+        }
+      } catch (error) {
+        console.error("Gagal load statistik:", error);
+      }
+    };
+    fetchStats();
   }, []);
 
   const useCountUp = (targetValue: number, duration = 1500) => {
@@ -32,35 +66,48 @@ const StatsTentangKami: React.FC = () => {
     return count;
   };
 
+  // Component Wrapper untuk render angka agar hooks aman
+  const StatItemDisplay = ({
+    value,
+    label,
+  }: {
+    value: string;
+    label: string;
+  }) => {
+    const numericValue = parseInt(value.replace(/\D/g, ""), 10) || 0;
+    const suffix = value.replace(/[0-9]/g, "");
+    const count = useCountUp(numericValue);
+
+    return (
+      <div className="flex flex-col items-center justify-center min-w-[200px]">
+        <h4
+          className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#005592] mb-3"
+          style={{ fontFamily: "Roboto, sans-serif" }}
+        >
+          {count}
+          {suffix}
+        </h4>
+        <p
+          className="text-sm sm:text-base lg:text-lg text-gray-800"
+          style={{ fontFamily: "Inter, sans-serif" }}
+        >
+          {label}
+        </p>
+      </div>
+    );
+  };
+
   return (
     <div className="relative z-10 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16">
         <div className="flex justify-center items-center flex-wrap gap-10 sm:gap-16 text-center">
-          {statsData.map((stat) => {
-            const targetValue = parseInt(stat.value.replace(/\D/g, ""), 10);
-            const count = useCountUp(targetValue);
-
-            return (
-              <div
-                key={stat.id}
-                className="flex flex-col items-center justify-center min-w-[200px]"
-              >
-                <h4
-                  className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#005592] mb-3"
-                  style={{ fontFamily: "Roboto, sans-serif" }}
-                >
-                  {count}
-                  {stat.value.replace(/[0-9]/g, "")}
-                </h4>
-                <p
-                  className="text-sm sm:text-base lg:text-lg text-gray-800"
-                  style={{ fontFamily: "Inter, sans-serif" }}
-                >
-                  {stat.label}
-                </p>
-              </div>
-            );
-          })}
+          {statsData.map((stat) => (
+            <StatItemDisplay
+              key={stat.id}
+              value={stat.value}
+              label={stat.label}
+            />
+          ))}
         </div>
       </div>
     </div>

@@ -34,9 +34,14 @@ const Navbar: React.FC = () => {
         isScrolled ? "bg-white shadow-md" : "bg-white"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* PERUBAHAN DI SINI: 
+          1. Menghapus 'max-w-7xl mx-auto' agar tidak terpusat di tengah.
+          2. Mengganti menjadi 'w-full' agar lebar penuh dari ujung kiri ke kanan.
+          3. Mengatur px-6 lg:px-10 agar 'pentok' tapi tetap ada jarak manis sedikit dari pinggir layar.
+      */}
+      <div className="w-full px-6 lg:px-10">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
+          {/* Logo (Otomatis di Kiri karena justify-between) */}
           <Link to="/" className="flex items-center">
             <img
               src="/logo.png"
@@ -51,8 +56,7 @@ const Navbar: React.FC = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          {/* 🔽 REVISI: 'md:flex' diubah jadi 'lg:flex' 🔽 */}
+          {/* Desktop Navigation (Otomatis di Kanan karena justify-between) */}
           <div className="hidden lg:flex items-center space-x-6">
             {navItems.map((item) => (
               <Link
@@ -71,7 +75,6 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          {/* 🔽 REVISI: 'md:hidden' diubah jadi 'lg:hidden' 🔽 */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden text-[#005592] hover:text-[#66B2E0] transition-colors duration-200"
@@ -83,7 +86,6 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile Menu */}
-      {/* 🔽 REVISI: 'md:hidden' diubah jadi 'lg:hidden' 🔽 */}
       <div
         className={`lg:hidden grid transition-[grid-template-rows] duration-300 ease-in-out ${
           isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"

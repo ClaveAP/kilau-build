@@ -1,10 +1,14 @@
-// src/components/home/TestimonialsSection.tsx (Versi Revisi Kotak Bintang)
-
 import React, { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import axios from "axios";
 
-// Import data palsu kita
-import { testimonialsData } from "../../mocks/testimonials.mock";
+// Interface Lokal
+interface TestimonialItem {
+  id: number;
+  name: string;
+  text: string;
+  stars: number;
+}
 
 // Komponen bintang (tetap sama)
 const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
@@ -27,11 +31,34 @@ const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
 };
 
 const TestimonialsSection: React.FC = () => {
-  // Kita set 'loop: true' biar bisa muter terus
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
-
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+  // STATE DATA REAL
+  const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
+
+  // 1. FETCH DATA DARI API
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/testimoni");
+        if (response.data.success) {
+          // Mapping data DB (review, star) -> ke Format UI (text, stars)
+          const mappedData = response.data.data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            text: item.review, // Database pakai 'review'
+            stars: item.star, // Database pakai 'star'
+          }));
+          setTestimonials(mappedData);
+        }
+      } catch (error) {
+        console.error("Gagal load testimoni:", error);
+      }
+    };
+    fetchTestimonials();
+  }, []);
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -55,12 +82,17 @@ const TestimonialsSection: React.FC = () => {
     if (!emblaApi) return;
     setScrollSnaps(emblaApi.scrollSnapList());
     emblaApi.on("select", onSelect);
-  }, [emblaApi, onSelect]);
+    // Re-init embla saat data berubah agar slider tidak rusak
+    emblaApi.reInit();
+  }, [emblaApi, onSelect, testimonials]);
+
+  // Jika belum ada data, tampilkan kosong atau loading
+  if (testimonials.length === 0) return null;
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Header (tetap sama) */}
+        {/* Header */}
         <h2
           className="text-3xl sm:text-4xl font-bold text-center mb-12"
           style={{ fontFamily: '"Roboto", sans-serif' }}
@@ -73,12 +105,12 @@ const TestimonialsSection: React.FC = () => {
           {/* Slider Embla */}
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex -ml-4">
-              {testimonialsData.map((item) => (
+              {testimonials.map((item) => (
                 <div
                   key={item.id}
                   className="flex-none w-full sm:w-1/2 lg:w-1/4 pl-4"
                 >
-                  {/* Card Testimoni (tetap sama) */}
+                  {/* Card Testimoni */}
                   <div className="flex flex-col h-full border-2 border-[#005592] rounded-xl shadow-lg p-6 bg-white">
                     <div className="flex-1">
                       <h3
@@ -96,10 +128,7 @@ const TestimonialsSection: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* 🔽 REVISI DI SINI 🔽 */}
-                    {/* Bungkusnya dibuat 'flex justify-center' */}
                     <div className="mt-4 pt-4 border-t border-gray-200 flex justify-center">
-                      {/* Ini dia kotak putihnya */}
                       <div
                         className="inline-block bg-white rounded-full px-4 py-2 shadow-inner"
                         style={{
@@ -109,14 +138,13 @@ const TestimonialsSection: React.FC = () => {
                         <StarRating rating={item.stars} />
                       </div>
                     </div>
-                    {/* 🔼 BATAS REVISI 🔼 */}
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Tombol Kiri (tetap sama) */}
+          {/* Tombol Kiri */}
           <button
             onClick={scrollPrev}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition duration-300 -ml-4"
@@ -136,7 +164,7 @@ const TestimonialsSection: React.FC = () => {
             </svg>
           </button>
 
-          {/* Tombol Kanan (tetap sama) */}
+          {/* Tombol Kanan */}
           <button
             onClick={scrollNext}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition duration-300 -mr-4"
@@ -157,7 +185,7 @@ const TestimonialsSection: React.FC = () => {
           </button>
         </div>
 
-        {/* Dot Pagination (tetap sama) */}
+        {/* Dot Pagination */}
         <div className="flex justify-center gap-2 mt-8">
           {scrollSnaps.map((_, index) => (
             <button

@@ -1,9 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { statsData } from "../../mocks/stats.mock";
 import tk from "../../assets/tk.webp";
 import { useNavigate } from "react-router-dom";
 import { motion, useAnimation, useInView, easeOut } from "framer-motion";
-import type { Variants } from "framer-motion"; // ✅ Type-only import (fix TS error)
+import type { Variants } from "framer-motion";
+import axios from "axios";
+
+interface StatItem {
+  id: number;
+  label: string;
+  value: string;
+}
 
 const AboutSection: React.FC = () => {
   const navigate = useNavigate();
@@ -12,7 +18,32 @@ const AboutSection: React.FC = () => {
   const controls = useAnimation();
   const [hasStartedCount, setHasStartedCount] = useState(false);
 
-  // ✅ Mulai animasi dan count-up hanya saat elemen masuk viewport
+  // DATA REAL
+  const [stats, setStats] = useState<StatItem[]>([
+    { id: 1, label: "Tahun Pengalaman", value: "0+" },
+    { id: 2, label: "Proyek Selesai", value: "0+" },
+    { id: 3, label: "Klien Puas", value: "0+" },
+  ]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/statistic");
+        if (response.data.success && response.data.data.length > 0) {
+          const data = response.data.data[0];
+          setStats([
+            { id: 1, label: "Tahun Pengalaman", value: data.tahun_pengalaman },
+            { id: 2, label: "Proyek Selesai", value: data.proyek_selesai },
+            { id: 3, label: "Klien Puas", value: data.klien_puas },
+          ]);
+        }
+      } catch (error) {
+        console.error("Error fetch stats:", error);
+      }
+    };
+    fetchStats();
+  }, []);
+
   useEffect(() => {
     if (isInView) {
       controls.start("visible");
@@ -20,7 +51,6 @@ const AboutSection: React.FC = () => {
     }
   }, [isInView, controls]);
 
-  // ✅ Count-up logic (stabil)
   const useCountUp = (targetValue: number, duration = 1500) => {
     const [count, setCount] = useState(0);
 
@@ -45,19 +75,38 @@ const AboutSection: React.FC = () => {
     return count;
   };
 
-  // ✅ Framer Motion Variants tanpa error
   const fadeUp: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.7, ease: easeOut }, // FIX: pakai easing bawaan framer-motion
+      transition: { duration: 0.7, ease: easeOut },
     },
   };
 
   const handleNavigate = () => {
     navigate("/tentang-kami");
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const StatCounter = ({ value, label }: { value: string; label: string }) => {
+    const numericValue = parseInt(value.replace(/\D/g, ""), 10) || 0;
+    const suffix = value.replace(/[0-9]/g, "");
+    const count = useCountUp(numericValue);
+
+    return (
+      <motion.div
+        className="text-center transition-transform duration-700 ease-out transform hover:scale-105"
+        whileHover={{ scale: 1.08 }}
+        transition={{ type: "spring", stiffness: 200 }}
+      >
+        <h4 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#005592]">
+          {count}
+          {suffix}
+        </h4>
+        <p className="text-xs sm:text-sm text-gray-600 mt-1">{label}</p>
+      </motion.div>
+    );
   };
 
   return (
@@ -129,27 +178,13 @@ const AboutSection: React.FC = () => {
               transition={{ delay: 0.6 }}
               className="grid grid-cols-3 gap-4 mb-6"
             >
-              {statsData.map((stat) => {
-                const targetValue = parseInt(stat.value.replace(/\D/g, ""), 10);
-                const count = useCountUp(targetValue);
-
-                return (
-                  <motion.div
-                    key={stat.id}
-                    className="text-center transition-transform duration-700 ease-out transform hover:scale-105"
-                    whileHover={{ scale: 1.08 }}
-                    transition={{ type: "spring", stiffness: 200 }}
-                  >
-                    <h4 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#005592]">
-                      {count}
-                      {stat.value.replace(/[0-9]/g, "")}
-                    </h4>
-                    <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                      {stat.label}
-                    </p>
-                  </motion.div>
-                );
-              })}
+              {stats.map((stat) => (
+                <StatCounter
+                  key={stat.id}
+                  value={stat.value}
+                  label={stat.label}
+                />
+              ))}
             </motion.div>
 
             {/* Button */}

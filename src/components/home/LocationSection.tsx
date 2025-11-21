@@ -1,23 +1,61 @@
-import React from "react";
-// 1. Import Mock Data & Helper
-import {
-  MOCK_KONTAK_DATA,
-  getContactByType,
-  convertToEmbedUrl,
-} from "../../mocks/contact.mock";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const LocationSection: React.FC = () => {
-  // 2. Ambil data lokasi dari Mock Data
-  const lokasiData = getContactByType(MOCK_KONTAK_DATA, "lokasi");
+  const [locationData, setLocationData] = useState<{
+    address: string;
+    mapUrl: string;
+  } | null>(null);
 
-  // 3. Convert URL agar aman masuk ke iframe
-  // Jika admin input link share biasa, fungsi ini akan mengubahnya jadi embed link
-  const mapUrl = lokasiData?.mapsUrl
-    ? convertToEmbedUrl(lokasiData.mapsUrl)
-    : "";
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fallback jika alamat kosong
-  const displayAddress = lokasiData?.value || "Alamat belum tersedia.";
+  const convertToEmbedUrl = (url: string): string => {
+    if (!url) return "";
+
+    if (url.includes("maps.app.goo.gl")) return "";
+
+    if (url.includes("/maps/embed")) return url;
+
+    try {
+      if (url.includes("?q=")) {
+        const match = url.match(/[?&]q=([^&]+)/);
+        if (match && match[1]) {
+          return `https://www.google.com/maps?q=${match[1]}&hl=id&z=14&output=embed`;
+        }
+      }
+
+      const match2 = url.match(/@([^,]+),([^,]+)/);
+      if (match2) {
+        return `https://www.google.com/maps?q=${match2[1]},${match2[2]}&hl=id&z=14&output=embed`;
+      }
+
+      return "";
+    } catch (e) {
+      return "";
+    }
+  };
+
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/contact");
+        if (response.data.success && response.data.data.length > 0) {
+          const data = response.data.data[0];
+
+          setLocationData({
+            address: data.alamat || "Alamat belum tersedia.",
+            mapUrl: convertToEmbedUrl(data.link_gmaps),
+          });
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data lokasi:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContact();
+  }, []);
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-white">
@@ -46,10 +84,14 @@ const LocationSection: React.FC = () => {
           <div className="flex justify-center md:justify-end">
             <div className="w-full max-w-lg border-4 border-[#005592] rounded-2xl p-4 sm:p-6 shadow-lg">
               {/* Container Peta */}
-              <div className="block rounded-lg overflow-hidden aspect-4/3 bg-gray-100">
-                {mapUrl ? (
+              <div className="block rounded-lg overflow-hidden aspect-4/3 bg-gray-100 relative">
+                {isLoading ? (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                    Memuat peta...
+                  </div>
+                ) : locationData?.mapUrl ? (
                   <iframe
-                    src={mapUrl}
+                    src={locationData.mapUrl}
                     className="w-full h-full border-0"
                     allowFullScreen={true}
                     loading="lazy"
@@ -57,19 +99,23 @@ const LocationSection: React.FC = () => {
                     title="Peta Lokasi Kantor"
                   ></iframe>
                 ) : (
-                  // Tampilan jika URL Peta kosong / error
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                    Peta tidak tersedia
+                  <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 text-sm p-4 text-center">
+                    <p>Peta tidak tersedia.</p>
+                    <p className="text-xs mt-1">
+                      (Pastikan Admin input URL lengkap dari address bar)
+                    </p>
                   </div>
                 )}
               </div>
 
-              {/* Alamat Dinamis dari Mock Data */}
+              {/* Alamat Dinamis */}
               <p
                 className="text-center text-sm sm:text-base text-gray-700 mt-4"
                 style={{ fontFamily: "Inter, sans-serif" }}
               >
-                {displayAddress}
+                {isLoading
+                  ? "Memuat alamat..."
+                  : locationData?.address || "Alamat belum diatur."}
               </p>
             </div>
           </div>

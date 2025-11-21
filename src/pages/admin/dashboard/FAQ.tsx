@@ -1,9 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
-import { useFAQ } from "../../../contexts/FAQContext";
+import axios from "axios";
 
 const FAQ = () => {
-  const { faqs, setFaqs } = useFAQ();
+  const [faqs, setFaqs] = useState<any[]>([]);
+
+  // 1. AMBIL TOKEN DARI LOCALSTORAGE
+  const token = localStorage.getItem("admin_token");
+
+  // 2. KONFIGURASI HEADER UNTUK REQUEST POST/PUT/DELETE
+  const authConfig = {
+    headers: {
+      Authorization: `Bearer ${token}`, // Wajib ada untuk route protected
+    },
+  };
+
+  // Fetch Data (GET boleh tanpa token karena route-nya public di api.php)
+  function fetchFaqs() {
+    axios
+      .get("http://127.0.0.1:8000/api/faq")
+      .then((response) => {
+        setFaqs(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching FAQs:", error);
+      });
+  }
+
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
 
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -12,27 +38,21 @@ const FAQ = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newQuestion, setNewQuestion] = useState<string>("");
   const [newAnswer, setNewAnswer] = useState<string>("");
+
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     id: number | null;
-  }>({
-    isOpen: false,
-    id: null,
-  });
+  }>({ isOpen: false, id: null });
+
   const [errorModal, setErrorModal] = useState<{
     isOpen: boolean;
     message: string;
-  }>({
-    isOpen: false,
-    message: "",
-  });
+  }>({ isOpen: false, message: "" });
+
   const [successModal, setSuccessModal] = useState<{
     isOpen: boolean;
     message: string;
-  }>({
-    isOpen: false,
-    message: "",
-  });
+  }>({ isOpen: false, message: "" });
 
   const toggleExpand = (id: number) => {
     setExpandedId(expandedId === id ? null : id);
@@ -44,10 +64,11 @@ const FAQ = () => {
       setEditingId(id);
       setEditQuestion(faq.question);
       setEditAnswer(faq.answer);
-      setExpandedId(id); // Auto expand saat edit
+      setExpandedId(id);
     }
   };
 
+  // --- FUNGSI UPDATE (Perbaikan: Tambah Auth Header) ---
   const handleSaveEdit = () => {
     if (editingId) {
       if (!editQuestion.trim() || !editAnswer.trim()) {
@@ -57,20 +78,34 @@ const FAQ = () => {
         });
         return;
       }
-      setFaqs(
-        faqs.map((faq) =>
-          faq.id === editingId
-            ? {
-                ...faq,
-                question: editQuestion.trim(),
-                answer: editAnswer.trim(),
-              }
-            : faq
+
+      // PUT request dengan token
+      axios
+        .put(
+          `http://127.0.0.1:8000/api/faq/${editingId}`,
+          {
+            question: editQuestion.trim(),
+            answer: editAnswer.trim(),
+          },
+          authConfig // <-- PENTING: Bawa token
         )
-      );
-      setEditingId(null);
-      setEditQuestion("");
-      setEditAnswer("");
+        .then(() => {
+          fetchFaqs(); // Refresh data setelah sukses
+          setEditingId(null);
+          setEditQuestion("");
+          setEditAnswer("");
+          setSuccessModal({
+            isOpen: true,
+            message: "Perubahan berhasil disimpan!",
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          setErrorModal({
+            isOpen: true,
+            message: "Gagal menyimpan perubahan. Cek login Anda.",
+          });
+        });
     }
   };
 
@@ -84,14 +119,31 @@ const FAQ = () => {
     setDeleteConfirm({ isOpen: true, id });
   };
 
+  // --- FUNGSI DELETE (Perbaikan: Tambah Auth Header) ---
   const confirmDelete = () => {
     if (deleteConfirm.id) {
-      setFaqs(faqs.filter((faq) => faq.id !== deleteConfirm.id));
-      if (expandedId === deleteConfirm.id) {
-        setExpandedId(null);
-      }
+      axios
+        .delete(
+          `http://127.0.0.1:8000/api/faq/${deleteConfirm.id}`,
+          authConfig // <-- PENTING: Bawa token
+        )
+        .then(() => {
+          fetchFaqs(); // Refresh data setelah sukses
+          if (expandedId === deleteConfirm.id) {
+            setExpandedId(null);
+          }
+          setDeleteConfirm({ isOpen: false, id: null });
+          setSuccessModal({ isOpen: true, message: "FAQ berhasil dihapus!" });
+        })
+        .catch((error) => {
+          console.error("Error deleting FAQ:", error);
+          setErrorModal({
+            isOpen: true,
+            message: "Gagal menghapus FAQ!",
+          });
+          setDeleteConfirm({ isOpen: false, id: null });
+        });
     }
-    setDeleteConfirm({ isOpen: false, id: null });
   };
 
   const cancelDelete = () => {
@@ -110,7 +162,8 @@ const FAQ = () => {
     setNewAnswer("");
   };
 
-  const handleSaveAdd = () => {
+  // --- FUNGSI CREATE (Perbaikan: Tambah Auth Header) ---
+  const handleSaveAdd = async () => {
     if (!newQuestion.trim() || !newAnswer.trim()) {
       setErrorModal({
         isOpen: true,
@@ -118,21 +171,33 @@ const FAQ = () => {
       });
       return;
     }
-    const maxId = faqs.length > 0 ? Math.max(...faqs.map((f) => f.id)) : 0;
-    setFaqs([
-      ...faqs,
-      {
-        id: maxId + 1,
-        question: newQuestion.trim(),
-        answer: newAnswer.trim(),
-      },
-    ]);
-    handleCloseModal();
-  };
 
-  const handleSaveChanges = () => {
-    console.log("Data FAQ yang disimpan:", faqs);
-    setSuccessModal({ isOpen: true, message: "Perubahan berhasil disimpan!" });
+    // POST request dengan token
+    axios
+      .post(
+        "http://127.0.0.1:8000/api/faq",
+        {
+          question: newQuestion,
+          answer: newAnswer,
+        },
+        authConfig // <-- PENTING: Bawa token
+      )
+      .then((response) => {
+        console.log("Created:", response.data.data);
+        fetchFaqs(); // Refresh data setelah sukses
+        handleCloseModal();
+        setSuccessModal({
+          isOpen: true,
+          message: "FAQ baru berhasil ditambahkan!",
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        setErrorModal({
+          isOpen: true,
+          message: "Gagal menambahkan FAQ. Cek login Anda.",
+        });
+      });
   };
 
   // Icon Components
@@ -206,7 +271,7 @@ const FAQ = () => {
           FAQ (Frequently Asked Questions)
         </h1>
 
-        {/* FAQ List Container - Scrollable jika lebih dari 6 item */}
+        {/* FAQ List Container */}
         <div
           className={`space-y-3 mb-4 p-2 ${
             faqs.length > 6 ? "max-h-[60vh] overflow-y-auto" : ""
@@ -277,7 +342,7 @@ const FAQ = () => {
                         <ChevronDownIcon />
                       </span>
                     </button>
-                    <div className="flex gap-2 flex-shrink-0">
+                    <div className="flex gap-2 shrink-0">
                       <button
                         onClick={() => handleEdit(faq.id)}
                         className="px-3 py-1.5 bg-[#0066AE] hover:bg-[#005a9e] text-white text-sm rounded-md transition-colors flex items-center gap-1"
@@ -326,48 +391,10 @@ const FAQ = () => {
               justifyContent: "center",
               gap: "0.5rem",
               transition: "background-color 0.2s",
-              boxShadow: "none",
-              outline: "none",
-              WebkitAppearance: "none",
-              MozAppearance: "none",
-              appearance: "none",
-              textDecoration: "none",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#005a9e")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#0066AE")
-            }
           >
             <PlusIcon />
             Tambah FAQ
-          </button>
-        </div>
-
-        {/* Save Button */}
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <button
-            onClick={handleSaveChanges}
-            style={{
-              backgroundColor: "#0066AE",
-              color: "#ffffff",
-              padding: "0.75rem 2rem",
-              borderRadius: "0.5rem",
-              fontWeight: 500,
-              border: "none",
-              cursor: "pointer",
-              fontSize: "1rem",
-              transition: "background-color 0.2s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#005a9e")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#0066AE")
-            }
-          >
-            Simpan Perubahan
           </button>
         </div>
       </div>
@@ -423,45 +450,13 @@ const FAQ = () => {
               >
                 <button
                   onClick={handleCloseModal}
-                  style={{
-                    padding: "0.5rem 1rem",
-                    backgroundColor: "#d1d5db",
-                    color: "#374151",
-                    borderRadius: "0.375rem",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "1rem",
-                    fontWeight: 500,
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#9ca3af")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#d1d5db")
-                  }
+                  className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   onClick={handleSaveAdd}
-                  style={{
-                    backgroundColor: "#0066AE",
-                    color: "#ffffff",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "0.375rem",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "1rem",
-                    fontWeight: 500,
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#005a9e")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#0066AE")
-                  }
+                  className="px-4 py-2 bg-[#0066AE] hover:bg-[#005a9e] text-white rounded-md transition-colors"
                 >
                   Simpan
                 </button>
@@ -481,24 +476,6 @@ const FAQ = () => {
             className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 animate-slideUp"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-red-100">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#ef4444"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 6h18"></path>
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                <line x1="10" y1="11" x2="10" y2="17"></line>
-                <line x1="14" y1="11" x2="14" y2="17"></line>
-              </svg>
-            </div>
             <h3 className="text-xl font-bold text-center text-gray-800 mb-2">
               Konfirmasi Hapus
             </h3>
@@ -507,16 +484,14 @@ const FAQ = () => {
             </p>
             <div className="flex gap-3 justify-center">
               <button
-                type="button"
                 onClick={cancelDelete}
-                className="px-6 py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium transition-colors"
+                className="px-6 py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg"
               >
                 Batal
               </button>
               <button
-                type="button"
                 onClick={confirmDelete}
-                className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg"
               >
                 Hapus
               </button>
@@ -528,40 +503,23 @@ const FAQ = () => {
       {/* Error Modal */}
       {errorModal.isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] animate-fadeIn"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
           onClick={() => setErrorModal({ isOpen: false, message: "" })}
         >
           <div
-            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 animate-slideUp z-[10000]"
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-red-100">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#ef4444"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-center text-gray-800 mb-2">
-              Perhatian
+            <h3 className="text-xl font-bold text-center text-red-600 mb-2">
+              Error
             </h3>
-            <p className="text-center text-gray-600 mb-6 leading-relaxed">
+            <p className="text-center text-gray-600 mb-6">
               {errorModal.message}
             </p>
             <div className="flex justify-center">
               <button
-                type="button"
                 onClick={() => setErrorModal({ isOpen: false, message: "" })}
-                className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2 bg-red-500 text-white rounded-lg"
               >
                 Tutup
               </button>
@@ -573,39 +531,23 @@ const FAQ = () => {
       {/* Success Modal */}
       {successModal.isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] animate-fadeIn"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
           onClick={() => setSuccessModal({ isOpen: false, message: "" })}
         >
           <div
-            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 animate-slideUp z-[10000]"
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-green-100">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#10b981"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-center text-gray-800 mb-2">
+            <h3 className="text-xl font-bold text-center text-green-600 mb-2">
               Berhasil
             </h3>
-            <p className="text-center text-gray-600 mb-6 leading-relaxed">
+            <p className="text-center text-gray-600 mb-6">
               {successModal.message}
             </p>
             <div className="flex justify-center">
               <button
-                type="button"
                 onClick={() => setSuccessModal({ isOpen: false, message: "" })}
-                className="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2 bg-green-500 text-white rounded-lg"
               >
                 Tutup
               </button>
@@ -617,31 +559,15 @@ const FAQ = () => {
       {/* CSS for animations */}
       <style>{`
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-        .animate-slideUp {
-          animation: slideUp 0.3s ease-out;
-        }
+        .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+        .animate-slideUp { animation: slideUp 0.3s ease-out; }
       `}</style>
     </DashboardLayout>
   );

@@ -1,3 +1,6 @@
+import design from "../assets/design.png";
+import bangunDari0 from "../assets/bangun dari 0.png";
+import houseDesign from "../assets/house design.png";
 import React, {
   createContext,
   useContext,
@@ -31,33 +34,38 @@ const PortofolioContext = createContext<PortofolioContextType | undefined>(
 
 const defaultProjects: ProjectsState = {
   done: [
-    { id: 1, title: "Rumah Minimalis", year: 2024, image: "/design.png" },
-    { id: 2, title: "Hunian Modern", year: 2023, image: "/bangun-dari-0.png" },
-    { id: 3, title: "Perumahan Cluster", year: 2025, image: "/renovasi.png" },
+    {
+      id: 1,
+      title: "Rumah Minimalis",
+      year: 2024,
+      image: design,
+    },
+    { id: 2, title: "Hunian Modern", year: 2023, image: bangunDari0 },
+    { id: 3, title: "Perumahan Cluster", year: 2025, image: houseDesign },
   ],
   ongoing: [
-    { id: 7, title: "Ruko 2 Lantai", year: 2025, image: "/design.png" },
+    { id: 7, title: "Ruko 2 Lantai", year: 2025, image: design },
     {
       id: 8,
       title: "Apartemen Studio",
       year: 2025,
-      image: "/bangun-dari-0.png",
+      image: bangunDari0,
     },
-    { id: 9, title: "Rumah Tipe 70", year: 2025, image: "/renovasi.png" },
+    { id: 9, title: "Rumah Tipe 70", year: 2025, image: houseDesign },
   ],
   interior: [
-    { id: 10, title: "Desain Kamar Tidur", year: 2024, image: "/design.png" },
+    { id: 10, title: "Desain Kamar Tidur", year: 2024, image: design },
     {
       id: 11,
       title: "Desain Ruang Tamu",
       year: 2024,
-      image: "/bangun-dari-0.png",
+      image: bangunDari0,
     },
     {
       id: 12,
       title: "Desain Dapur Modern",
       year: 2024,
-      image: "/renovasi.png",
+      image: houseDesign,
     },
   ],
 };

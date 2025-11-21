@@ -1,33 +1,28 @@
-// src/components/home/FaqSection.tsx (Versi Perbaikan Jarak)
+// src/components/home/FaqSection.tsx
 
-import React, { useState } from "react";
-// 1. Import data palsu kita
-import { faqData } from "../../mocks/faq.mock";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-// Komponen kecil untuk satu item FAQ
+// Komponen FaqItem (tanpa tombol edit)
 const FaqItem: React.FC<{
   item: { id: number; question: string; answer: string };
   isOpen: boolean;
   onToggle: () => void;
 }> = ({ item, isOpen, onToggle }) => {
   return (
-    // 🔽 STYLE KOTAKNYA PINDAH KE SINI 🔽
-    // Ini yang bikin jadi kotak terpisah
     <div className="w-full rounded-2xl bg-white shadow-lg border border-blue-200/75 overflow-hidden">
-      {/* Tombol Pertanyaan */}
+      {/* Pertanyaan */}
       <button
         onClick={onToggle}
         className="flex w-full items-center justify-between py-5 px-6 text-left"
       >
-        <span
-          className="text-base sm:text-lg font-medium text-gray-800"
-          style={{ fontFamily: "Inter, sans-serif" }}
-        >
+        <span className="text-base sm:text-lg font-medium text-gray-800">
           {item.question}
         </span>
-        {/* Ikon Chevron */}
+
+        {/* Chevron */}
         <span
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#005592] text-white ${
+          className={`flex h-8 w-8 items-center justify-center rounded-full bg-[#005592] text-white ${
             isOpen ? "rotate-180" : ""
           } transition-transform duration-300`}
         >
@@ -47,17 +42,14 @@ const FaqItem: React.FC<{
         </span>
       </button>
 
-      {/* Konten Jawaban (Buka-Tutup) */}
+      {/* Jawaban */}
       <div
-        className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`grid overflow-hidden transition-all duration-300 ${
           isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
         <div className="overflow-hidden">
-          <p
-            className="px-6 pb-5 text-sm sm:text-base text-gray-600 leading-relaxed"
-            style={{ fontFamily: "Inter, sans-serif" }}
-          >
+          <p className="px-6 pb-5 text-sm sm:text-base text-gray-600 leading-relaxed">
             {item.answer}
           </p>
         </div>
@@ -66,9 +58,20 @@ const FaqItem: React.FC<{
   );
 };
 
-// Ini adalah Komponen Section utamanya
 const FaqSection: React.FC = () => {
   const [openId, setOpenId] = useState<number | null>(null);
+  const [faqs, setFaqs] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/api/faq")
+      .then((response) => {
+        setFaqs(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching FAQs:", error);
+      });
+  }, []);
 
   const handleToggle = (id: number) => {
     setOpenId(openId === id ? null : id);
@@ -76,26 +79,18 @@ const FaqSection: React.FC = () => {
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
-      {" "}
-      {/* Ganti bg jika perlu */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <h2
-          className="text-3xl sm:text-4xl font-bold text-center mb-8"
-          style={{ fontFamily: "Roboto, sans-serif" }}
-        >
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
           Frequently Asked <span className="text-[#005592]">Questions</span>
         </h2>
 
-        {/* 🔽 PEMBUNGKUSNYA DIGANTI JADI INI 🔽 */}
-        {/* Ini yang ngasih JARAK antar pertanyaan */}
         <div className="w-full space-y-4">
-          {faqData.map((item) => (
+          {faqs.map((faq) => (
             <FaqItem
-              key={item.id}
-              item={item}
-              isOpen={openId === item.id}
-              onToggle={() => handleToggle(item.id)}
+              key={faq.id}
+              item={faq}
+              isOpen={openId === faq.id}
+              onToggle={() => handleToggle(faq.id)}
             />
           ))}
         </div>

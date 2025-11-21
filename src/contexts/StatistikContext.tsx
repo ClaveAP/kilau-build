@@ -27,7 +27,6 @@ export const StatistikProvider: React.FC<{ children: ReactNode }> = ({
     { id: 1, label: "Tahun Pengalaman", value: "23" },
     { id: 2, label: "Proyek Selesai", value: "470" },
     { id: 3, label: "Klien Puas", value: "5" },
-    { id: 4, label: "Kota", value: "75" },
   ]);
 
   return (

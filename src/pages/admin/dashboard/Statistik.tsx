@@ -1,31 +1,103 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
-import { useStatistik } from "../../../contexts/StatistikContext";
+import axios from "axios";
+
+// Hapus Context, kita ganti dengan API
+// import { useStatistik } from "../../../contexts/StatistikContext";
+
+const API_BASE_URL = "http://127.0.0.1:8000/api";
+
+// Interface Data
+interface StatistikItem {
+  id: number;
+  label: string;
+  value: string;
+  dbField: string; // Mapping ke kolom database
+}
 
 const Statistik = () => {
-  const { statistikData, setStatistikData } = useStatistik();
-  // Temporary state untuk menyimpan perubahan sebelum di-save
-  const [tempStatistikData, setTempStatistikData] = useState(statistikData);
+  // State Utama (Default 0 agar tidak error saat loading)
+  const [statistikData, setStatistikData] = useState<StatistikItem[]>([
+    {
+      id: 1,
+      label: "Tahun Pengalaman",
+      value: "0",
+      dbField: "tahun_pengalaman",
+    },
+    { id: 2, label: "Proyek Selesai", value: "0", dbField: "proyek_selesai" },
+    { id: 3, label: "Klien Puas", value: "0", dbField: "klien_puas" },
+    { id: 4, label: "Kota", value: "0", dbField: "sebaran_kota" },
+  ]);
 
-  // Initialize tempStatistikData dari context saat component mount atau context berubah
+  const [dbId, setDbId] = useState<number | null>(null); // ID Database
+  const [tempStatistikData, setTempStatistikData] = useState(statistikData);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Auth Token
+  const token = localStorage.getItem("admin_token");
+  const authConfig = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+
+  // --- 1. AMBIL DATA DARI DATABASE (FETCH) ---
   useEffect(() => {
-    setTempStatistikData(statistikData);
-  }, [statistikData]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/statistic`);
+        if (response.data.success && response.data.data.length > 0) {
+          const data = response.data.data[0];
+          setDbId(data.id);
+
+          // Masukkan data database ke format UI
+          const newData = [
+            {
+              id: 1,
+              label: "Tahun Pengalaman",
+              value: data.tahun_pengalaman,
+              dbField: "tahun_pengalaman",
+            },
+            {
+              id: 2,
+              label: "Proyek Selesai",
+              value: data.proyek_selesai,
+              dbField: "proyek_selesai",
+            },
+            {
+              id: 3,
+              label: "Klien Puas",
+              value: data.klien_puas,
+              dbField: "klien_puas",
+            },
+            {
+              id: 4,
+              label: "Kota",
+              value: data.sebaran_kota,
+              dbField: "sebaran_kota",
+            },
+          ];
+          setStatistikData(newData);
+          setTempStatistikData(newData);
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data statistik:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const [isEditingAll, setIsEditingAll] = useState<boolean>(false);
   const [editValues, setEditValues] = useState<{ [key: number]: string }>({});
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
-  const [successModal, setSuccessModal] = useState<{
+
+  // Modal Sukses & Error
+  const [statusModal, setStatusModal] = useState<{
     isOpen: boolean;
+    type: "success" | "error";
     message: string;
-  }>({
-    isOpen: false,
-    message: "",
-  });
+  }>({ isOpen: false, type: "success", message: "" });
 
   const handleEditAll = () => {
     setIsEditingAll(true);
-    // Initialize edit values with current values
     const initialValues: { [key: number]: string } = {};
     tempStatistikData.forEach((item) => {
       initialValues[item.id] = item.value;
@@ -37,7 +109,6 @@ const Statistik = () => {
     const updatedData = tempStatistikData.map((item) => {
       const newValue =
         editValues[item.id] !== undefined ? editValues[item.id] : item.value;
-      // Jika value kosong setelah trim, set menjadi "0"
       const finalValue = newValue?.trim() === "" ? "0" : newValue || "0";
       return {
         ...item,
@@ -62,6 +133,7 @@ const Statistik = () => {
   const handleCancelEdit = () => {
     setIsEditingAll(false);
     setEditValues({});
+    setTempStatistikData(statistikData); // Reset ke data asli
   };
 
   const handleUpdateEditValue = (id: number, value: string) => {
@@ -76,7 +148,6 @@ const Statistik = () => {
   };
 
   const confirmDeleteAll = () => {
-    // Hanya hapus nilai (set menjadi "0"), bukan hapus semua item
     const updatedData = tempStatistikData.map((item) => ({
       ...item,
       value: "0",
@@ -89,13 +160,53 @@ const Statistik = () => {
     setDeleteConfirm(false);
   };
 
-  const handleSaveChanges = () => {
-    // Simpan perubahan dari tempStatistikData ke context
-    setStatistikData(tempStatistikData);
-    setSuccessModal({ isOpen: true, message: "Perubahan berhasil disimpan!" });
+  // --- 2. SIMPAN KE DATABASE (LOGIC UTAMA) ---
+  const handleSaveChanges = async () => {
+    setIsLoading(true);
+
+    // Ubah Format Array UI -> Object Database
+    const payload: any = {};
+    tempStatistikData.forEach((item) => {
+      payload[item.dbField] = item.value;
+    });
+
+    try {
+      if (dbId) {
+        // UPDATE DATA
+        await axios.put(
+          `${API_BASE_URL}/statistic/${dbId}`,
+          payload,
+          authConfig
+        );
+      } else {
+        // BUAT DATA BARU (Pertama kali)
+        const res = await axios.post(
+          `${API_BASE_URL}/statistic`,
+          payload,
+          authConfig
+        );
+        setDbId(res.data.data.id);
+      }
+
+      setStatistikData(tempStatistikData); // Update state utama
+      setStatusModal({
+        isOpen: true,
+        type: "success",
+        message: "Perubahan berhasil disimpan ke database!",
+      });
+    } catch (error) {
+      console.error("Gagal menyimpan:", error);
+      setStatusModal({
+        isOpen: true,
+        type: "error",
+        message: "Gagal menyimpan data. Cek login Anda.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Icon SVG untuk Edit (Pensil)
+  // Icon SVG
   const EditIcon = () => (
     <svg
       width="16"
@@ -112,7 +223,6 @@ const Statistik = () => {
     </svg>
   );
 
-  // Icon SVG untuk Hapus (Trash)
   const TrashIcon = () => (
     <svg
       width="16"
@@ -192,15 +302,9 @@ const Statistik = () => {
                   fontSize: "1rem",
                   transition: "background-color 0.2s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#005a9e")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#0066AE")
-                }
               >
                 <EditIcon />
-                Simpan
+                Setel Nilai
               </button>
               <button
                 onClick={handleCancelEdit}
@@ -218,12 +322,6 @@ const Statistik = () => {
                   fontSize: "1rem",
                   transition: "background-color 0.2s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#4b5563")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#6b7280")
-                }
               >
                 Batal
               </button>
@@ -246,12 +344,6 @@ const Statistik = () => {
                   fontSize: "1rem",
                   transition: "background-color 0.2s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#005a9e")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#0066AE")
-                }
               >
                 <EditIcon />
                 Edit
@@ -272,15 +364,9 @@ const Statistik = () => {
                   fontSize: "1rem",
                   transition: "background-color 0.2s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#dc2626")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#ef4444")
-                }
               >
                 <TrashIcon />
-                Hapus
+                Reset
               </button>
             </>
           )}
@@ -289,6 +375,7 @@ const Statistik = () => {
         <div style={{ display: "flex", justifyContent: "center" }}>
           <button
             onClick={handleSaveChanges}
+            disabled={isLoading}
             style={{
               backgroundColor: "#0066AE",
               color: "#ffffff",
@@ -296,23 +383,18 @@ const Statistik = () => {
               borderRadius: "0.5rem",
               fontWeight: 500,
               border: "none",
-              cursor: "pointer",
+              cursor: isLoading ? "not-allowed" : "pointer",
               fontSize: "1rem",
               transition: "background-color 0.2s",
+              opacity: isLoading ? 0.7 : 1,
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#005a9e")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#0066AE")
-            }
           >
-            Simpan Perubahan
+            {isLoading ? "Menyimpan..." : "Simpan Perubahan ke Database"}
           </button>
         </div>
       </div>
 
-      {/* Modal Konfirmasi Hapus */}
+      {/* Modal Konfirmasi Reset */}
       {deleteConfirm && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn"
@@ -322,87 +404,58 @@ const Statistik = () => {
             className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 animate-slideUp"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-red-100">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#ef4444"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 6h18"></path>
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                <line x1="10" y1="11" x2="10" y2="17"></line>
-                <line x1="14" y1="11" x2="14" y2="17"></line>
-              </svg>
-            </div>
             <h3 className="text-xl font-bold text-center text-gray-800 mb-2">
-              Konfirmasi Hapus
+              Reset Angka?
             </h3>
             <p className="text-center text-gray-600 mb-6">
-              Apakah Anda yakin ingin menghapus semua angka statistik? (Data
-              akan direset menjadi 0)
+              Semua angka akan dikembalikan menjadi 0.
             </p>
             <div className="flex gap-3 justify-center">
               <button
-                type="button"
                 onClick={cancelDeleteAll}
-                className="px-6 py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium transition-colors"
+                className="px-6 py-2.5 bg-gray-300 text-gray-700 rounded-lg"
               >
                 Batal
               </button>
               <button
-                type="button"
                 onClick={confirmDeleteAll}
-                className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2.5 bg-red-500 text-white rounded-lg"
               >
-                Hapus
+                Reset
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Success Modal */}
-      {successModal.isOpen && (
+      {/* Modal Status (Success/Error) */}
+      {statusModal.isOpen && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] animate-fadeIn"
-          onClick={() => setSuccessModal({ isOpen: false, message: "" })}
+          onClick={() => setStatusModal({ ...statusModal, isOpen: false })}
         >
           <div
-            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 animate-slideUp z-[10000]"
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 animate-slideUp"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-green-100">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#10b981"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-center text-gray-800 mb-2">
-              Berhasil
+            <h3
+              className={`text-xl font-bold text-center mb-2 ${
+                statusModal.type === "success"
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {statusModal.type === "success" ? "Berhasil" : "Gagal"}
             </h3>
-            <p className="text-center text-gray-600 mb-6 leading-relaxed">
-              {successModal.message}
+            <p className="text-center text-gray-600 mb-6">
+              {statusModal.message}
             </p>
             <div className="flex justify-center">
               <button
-                type="button"
-                onClick={() => setSuccessModal({ isOpen: false, message: "" })}
-                className="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
+                onClick={() =>
+                  setStatusModal({ ...statusModal, isOpen: false })
+                }
+                className="px-6 py-2 bg-[#0066AE] text-white rounded-lg"
               >
                 Tutup
               </button>
@@ -411,34 +464,11 @@ const Statistik = () => {
         </div>
       )}
 
-      {/* CSS for animations */}
       <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-        .animate-slideUp {
-          animation: slideUp 0.3s ease-out;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+        .animate-slideUp { animation: slideUp 0.3s ease-out; }
       `}</style>
     </DashboardLayout>
   );

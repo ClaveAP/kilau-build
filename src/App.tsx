@@ -18,10 +18,10 @@ import MediaSosial from "./pages/MediaSosial";
 import Kontak from "./pages/Kontak";
 import Login from "./pages/admin/auth/Login";
 import Beranda from "./pages/admin/dashboard/Beranda";
-import Kalender from "./pages/admin/dashboard/Kalender";
 import Statistik from "./pages/admin/dashboard/Statistik";
 import Testimoni from "./pages/admin/dashboard/Testimoni";
 import FAQ from "./pages/admin/dashboard/FAQ";
+import AdminPortofolio from "./pages/admin/dashboard/Portofolio";
 import { StatistikProvider } from "./contexts/StatistikContext";
 import { TestimoniProvider } from "./contexts/TestimoniContext";
 import { KontakProvider } from "./contexts/KontakContext";
@@ -32,6 +32,7 @@ import { MediaSosialProvider } from "./contexts/MediaSosialContext";
 import { BerandaPortofolioProvider } from "./contexts/BerandaPortofolioContext";
 import KontakAdmin from "./pages/admin/dashboard/KontakAdmin";
 import MediaSosialAdmin from "./pages/admin/dashboard/MediaSosialAdmin";
+import ChangePassword from "./pages/admin/dashboard/ChangePassword";
 
 // 1. Buat Layout Khusus Public (Ada Navbar & Footer)
 const PublicLayout = () => {
@@ -49,7 +50,7 @@ const AdminLayout = () => {
   return (
     <div className="admin-layout">
       <div className="p-4">
-        <Outlet/>
+        <Outlet />
       </div>
     </div>
   );
@@ -60,8 +61,6 @@ function App() {
     <Router>
       <ScrollTop />
       <div className="min-h-screen">
-        <Navbar />
-
         <StatistikProvider>
           <TestimoniProvider>
             <KontakProvider>
@@ -115,9 +114,15 @@ function App() {
 
                             {/* Child Routes */}
                             <Route path="dashboard" element={<Beranda />} />
-                            <Route path="kalender" element={<Kalender />} />
+                            <Route
+                              path="change-password"
+                              element={<ChangePassword />}
+                            />
                             <Route path="statistik" element={<Statistik />} />
-                            <Route path="portofolio" element={<Portofolio />} />
+                            <Route
+                              path="portofolio"
+                              element={<AdminPortofolio />}
+                            />
                             <Route path="testimoni" element={<Testimoni />} />
                             <Route path="kontak" element={<KontakAdmin />} />
                             <Route path="faq" element={<FAQ />} />
@@ -135,8 +140,6 @@ function App() {
             </KontakProvider>
           </TestimoniProvider>
         </StatistikProvider>
-
-        <Footer />
       </div>
     </Router>
   );

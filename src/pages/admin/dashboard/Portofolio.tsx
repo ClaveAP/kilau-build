@@ -1,22 +1,87 @@
 import React, { useState, useRef, useEffect } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
-import {
-  usePortofolio,
-  type Project,
-  type Category,
-} from "../../../contexts/PortofolioContext";
+import axios from "axios";
+
+const API_BASE_URL = "http://127.0.0.1:8000/api";
+
+type Category = "done" | "ongoing" | "interior";
+
+export interface Project {
+  id: number;
+  title: string;
+  year: number;
+  image: string;
+  persen: number;
+  loc: string;
+}
 
 const Portofolio = () => {
-  const { projects, setProjects } = usePortofolio();
   const [activeCategory, setActiveCategory] = useState<Category>("done");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const token = localStorage.getItem("admin_token");
+
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    let endpoint = "";
+
+    if (activeCategory === "done") endpoint = "/project-done";
+    else if (activeCategory === "ongoing") endpoint = "/ongoing-project";
+    else if (activeCategory === "interior") endpoint = "/desain-interior";
+
+    try {
+      const response = await axios.get(`${API_BASE_URL}${endpoint}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        const mappedData = response.data.data.map((item: any) => ({
+          id: item.id,
+          title: item.name,
+          year: item.year ? parseInt(item.year) : new Date().getFullYear(),
+          image: item.image.startsWith("http")
+            ? item.image
+            : `http://127.0.0.1:8000/storage/${item.image}`,
+          loc: item.loc || "",
+          persen: item.persen || 0,
+        }));
+        setProjects(mappedData);
+      } else {
+        setProjects([]);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      setProjects([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, [activeCategory]);
 
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    id: number | null;
+  }>({ isOpen: false, id: null });
+
+  // FIX: Tambahkan loc dan persen ke formData
   const [formData, setFormData] = useState({
     title: "",
     year: new Date().getFullYear(),
+    loc: "",
+    persen: 0,
     image: "",
   });
 
@@ -25,20 +90,12 @@ const Portofolio = () => {
   const [errorModal, setErrorModal] = useState<{
     isOpen: boolean;
     message: string;
-  }>({
-    isOpen: false,
-    message: "",
-  });
-
+  }>({ isOpen: false, message: "" });
   const [successModal, setSuccessModal] = useState<{
     isOpen: boolean;
     message: string;
-  }>({
-    isOpen: false,
-    message: "",
-  });
+  }>({ isOpen: false, message: "" });
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (openMenuId !== null) {
@@ -48,16 +105,9 @@ const Portofolio = () => {
         }
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenuId]);
-
-  const getCurrentProjects = () => {
-    return projects[activeCategory];
-  };
 
   const handleCategoryChange = (category: Category) => {
     setActiveCategory(category);
@@ -71,36 +121,69 @@ const Portofolio = () => {
 
   const handleEdit = (project: Project) => {
     setEditingProject(project);
+    // FIX: Set all form data including loc and persen
     setFormData({
       title: project.title,
       year: project.year,
+      loc: project.loc || "",
+      persen: project.persen || 0,
       image: project.image,
     });
+    setImageFile(null);
     setIsEditMode(true);
     setIsModalOpen(true);
     setOpenMenuId(null);
   };
 
   const handleDelete = (projectId: number) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus proyek ini?")) {
-      setProjects({
-        ...projects,
-        [activeCategory]: projects[activeCategory].filter(
-          (p) => p.id !== projectId
-        ),
+    setDeleteConfirm({ isOpen: true, id: projectId });
+    setOpenMenuId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.id) return;
+
+    let endpoint = "";
+    if (activeCategory === "done")
+      endpoint = `/project-done/${deleteConfirm.id}`;
+    else if (activeCategory === "ongoing")
+      endpoint = `/ongoing-project/${deleteConfirm.id}`;
+    else if (activeCategory === "interior")
+      endpoint = `/desain-interior/${deleteConfirm.id}`;
+
+    try {
+      await axios.delete(`${API_BASE_URL}${endpoint}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setOpenMenuId(null);
+      fetchProjects();
+      setSuccessModal({ isOpen: true, message: "Proyek berhasil dihapus!" });
+    } catch (error) {
+      console.error("Gagal hapus:", error);
+      setErrorModal({
+        isOpen: true,
+        message: "Gagal menghapus proyek. Cek login.",
+      });
+    } finally {
+      setDeleteConfirm({ isOpen: false, id: null });
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm({ isOpen: false, id: null });
   };
 
   const handleOpenModal = () => {
     setIsEditMode(false);
     setEditingProject(null);
+    // FIX: Reset all form data
     setFormData({
       title: "",
       year: new Date().getFullYear(),
+      loc: "",
+      persen: 0,
       image: "",
     });
+    setImageFile(null);
     setIsModalOpen(true);
   };
 
@@ -108,89 +191,119 @@ const Portofolio = () => {
     setIsModalOpen(false);
     setIsEditMode(false);
     setEditingProject(null);
-    setFormData({
-      title: "",
-      year: new Date().getFullYear(),
-      image: "",
-    });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 2 * 1024 * 1024) {
         setErrorModal({
           isOpen: true,
-          message: "Ukuran file terlalu besar! Maksimal 5MB.",
+          message:
+            "Ukuran file terlalu besar! Maksimal 2MB agar server tidak berat.",
         });
         return;
       }
 
+      setImageFile(file);
+
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setFormData({ ...formData, image: base64String });
-      };
-      reader.onerror = () => {
-        setErrorModal({ isOpen: true, message: "Error membaca file!" });
+        setFormData({ ...formData, image: reader.result as string });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSaveProject = () => {
-    if (!formData.title.trim() || !formData.image.trim()) {
+  const handleSaveProject = async () => {
+    if (!formData.title.trim()) {
+      setErrorModal({ isOpen: true, message: "Judul tidak boleh kosong!" });
+      return;
+    }
+
+    if (!isEditMode && !imageFile) {
       setErrorModal({
         isOpen: true,
-        message: "Judul dan gambar tidak boleh kosong!",
+        message: "Gambar wajib diupload untuk proyek baru!",
       });
       return;
     }
 
-    if (isEditMode && editingProject) {
-      // Edit existing project
-      setProjects({
-        ...projects,
-        [activeCategory]: projects[activeCategory].map((p) =>
-          p.id === editingProject.id
-            ? {
-                ...p,
-                title: formData.title.trim(),
-                year: formData.year,
-                image: formData.image.trim(),
-              }
-            : p
-        ),
-      });
-    } else {
-      // Add new project
-      const maxId = Math.max(
-        ...Object.values(projects)
-          .flat()
-          .map((p) => p.id),
-        0
-      );
-      const newProject: Project = {
-        id: maxId + 1,
-        title: formData.title.trim(),
-        year: formData.year,
-        image: formData.image.trim(),
-      };
-      setProjects({
-        ...projects,
-        [activeCategory]: [...projects[activeCategory], newProject],
-      });
+    // FIX: Validasi khusus ongoing project
+    if (activeCategory === "ongoing") {
+      if (!formData.loc.trim()) {
+        setErrorModal({ isOpen: true, message: "Lokasi tidak boleh kosong!" });
+        return;
+      }
+      if (formData.persen < 0 || formData.persen > 100) {
+        setErrorModal({
+          isOpen: true,
+          message: "Progress harus antara 0-100%!",
+        });
+        return;
+      }
     }
 
-    handleCloseModal();
+    const dataToSend = new FormData();
+    dataToSend.append("name", formData.title);
+
+    // FIX: Kirim data sesuai kategori
+    if (activeCategory === "done") {
+      dataToSend.append("year", formData.year.toString());
+      dataToSend.append("desc", "-"); // Required by backend
+    } else if (activeCategory === "ongoing") {
+      dataToSend.append("loc", formData.loc);
+      dataToSend.append("persen", formData.persen.toString());
+    }
+    // Interior hanya butuh name dan image
+
+    if (imageFile) {
+      dataToSend.append("image", imageFile);
+    }
+
+    if (isEditMode && editingProject) {
+      dataToSend.append("_method", "PUT");
+    }
+
+    let endpoint = "";
+    if (activeCategory === "done") endpoint = "/project-done";
+    else if (activeCategory === "ongoing") endpoint = "/ongoing-project";
+    else if (activeCategory === "interior") endpoint = "/desain-interior";
+
+    const url =
+      isEditMode && editingProject
+        ? `${API_BASE_URL}${endpoint}/${editingProject.id}`
+        : `${API_BASE_URL}${endpoint}`;
+
+    try {
+      await axios.post(url, dataToSend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      fetchProjects();
+      handleCloseModal();
+      setSuccessModal({
+        isOpen: true,
+        message: isEditMode
+          ? "Proyek berhasil diperbarui!"
+          : "Proyek berhasil ditambahkan!",
+      });
+    } catch (error: any) {
+      console.error("Gagal simpan:", error);
+      console.error("Error response:", error.response?.data); // FIX: Better error logging
+      let msg = "Gagal menyimpan data.";
+      if (error.response?.data?.message) msg = error.response.data.message;
+      if (error.response?.status === 413)
+        msg = "File terlalu besar untuk server (Maks 2MB).";
+
+      setErrorModal({ isOpen: true, message: msg });
+    }
   };
 
-  const handleSaveChanges = () => {
-    console.log("Data portofolio yang disimpan:", projects);
-    setSuccessModal({ isOpen: true, message: "Perubahan berhasil disimpan!" });
-  };
-
-  // Icon Components
+  // --- ICONS ---
   const PlusIcon = () => (
     <svg
       width="16"
@@ -206,7 +319,6 @@ const Portofolio = () => {
       <line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
   );
-
   const MoreVerticalIcon = () => (
     <svg
       width="20"
@@ -223,7 +335,6 @@ const Portofolio = () => {
       <circle cx="12" cy="19" r="1"></circle>
     </svg>
   );
-
   const EditIcon = () => (
     <svg
       width="16"
@@ -239,7 +350,6 @@ const Portofolio = () => {
       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
     </svg>
   );
-
   const TrashIcon = () => (
     <svg
       width="16"
@@ -256,12 +366,11 @@ const Portofolio = () => {
     </svg>
   );
 
-  const currentProjects = getCurrentProjects();
+  console.log(projects);
 
   return (
     <DashboardLayout>
       <div className="p-6">
-        {/* Category Filter Section */}
         <div style={{ marginBottom: "2rem" }}>
           <h2
             style={{
@@ -288,16 +397,6 @@ const Portofolio = () => {
                   activeCategory === "done" ? "#0066AE" : "#E3F2FD",
                 color: activeCategory === "done" ? "#ffffff" : "#0066AE",
               }}
-              onMouseEnter={(e) => {
-                if (activeCategory !== "done") {
-                  e.currentTarget.style.backgroundColor = "#BBDEFB";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeCategory !== "done") {
-                  e.currentTarget.style.backgroundColor = "#E3F2FD";
-                }
-              }}
             >
               Project Done
             </button>
@@ -314,16 +413,6 @@ const Portofolio = () => {
                 backgroundColor:
                   activeCategory === "ongoing" ? "#0066AE" : "#E3F2FD",
                 color: activeCategory === "ongoing" ? "#ffffff" : "#0066AE",
-              }}
-              onMouseEnter={(e) => {
-                if (activeCategory !== "ongoing") {
-                  e.currentTarget.style.backgroundColor = "#BBDEFB";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeCategory !== "ongoing") {
-                  e.currentTarget.style.backgroundColor = "#E3F2FD";
-                }
               }}
             >
               Ongoing Project
@@ -342,94 +431,143 @@ const Portofolio = () => {
                   activeCategory === "interior" ? "#0066AE" : "#E3F2FD",
                 color: activeCategory === "interior" ? "#ffffff" : "#0066AE",
               }}
-              onMouseEnter={(e) => {
-                if (activeCategory !== "interior") {
-                  e.currentTarget.style.backgroundColor = "#BBDEFB";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeCategory !== "interior") {
-                  e.currentTarget.style.backgroundColor = "#E3F2FD";
-                }
-              }}
             >
               Desain Interior
             </button>
           </div>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-          {currentProjects.map((project) => (
-            <div
-              key={project.id}
-              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group relative hover:scale-[1.02]"
-            >
-              {/* Image Container */}
-              <div className="relative h-48 bg-gray-200 overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = "none";
-                    const parent = target.parentElement;
-                    if (parent) {
-                      parent.innerHTML =
-                        '<div class="w-full h-full flex items-center justify-center bg-gray-100"><span class="text-gray-400 text-center px-4">' +
-                        project.title +
-                        "</span></div>";
-                    }
-                  }}
-                />
-
-                {/* Three Dots Menu Button */}
-                <button
-                  onClick={(e) => handleMenuToggle(project.id, e)}
-                  className="absolute top-2 right-2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all z-10 text-primary-blue"
-                >
-                  <MoreVerticalIcon />
-                </button>
-
-                {/* Dropdown Menu */}
-                {openMenuId === project.id && (
-                  <div
-                    ref={(el) => {
-                      menuRefs.current[project.id] = el;
+        {isLoading ? (
+          <p className="text-center text-gray-500">Memuat proyek...</p>
+        ) : projects.length === 0 ? (
+          <p className="text-center text-gray-400 mb-4">
+            Belum ada proyek di kategori ini.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
+            {projects.map((project) => (
+              <div
+                key={project.id}
+                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group relative hover:scale-[1.02]"
+              >
+                <div className="relative h-48 bg-gray-200 overflow-hidden">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://placehold.co/600x400?text=No+Image";
                     }}
-                    className="absolute top-12 right-2 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[120px] animate-fadeIn"
+                  />
+                  <button
+                    onClick={(e) => handleMenuToggle(project.id, e)}
+                    className="absolute top-2 right-2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all z-10 text-primary-blue"
                   >
-                    <button
-                      onClick={() => handleEdit(project)}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#E3F2FD] flex items-center gap-2 transition-colors"
+                    <MoreVerticalIcon />
+                  </button>
+                  {openMenuId === project.id && (
+                    <div
+                      ref={(el) => {
+                        menuRefs.current[project.id] = el;
+                      }}
+                      className="absolute top-12 right-2 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[120px] animate-fadeIn"
                     >
-                      <EditIcon />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(project.id)}
-                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
-                    >
-                      <TrashIcon />
-                      Hapus
-                    </button>
-                  </div>
-                )}
+                      <button
+                        onClick={() => handleEdit(project)}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#E3F2FD] flex items-center gap-2 transition-colors"
+                      >
+                        <EditIcon />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(project.id)}
+                        className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                      >
+                        <TrashIcon />
+                        Hapus
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-800 mb-1">
+                    {project.title}
+                  </h3>
+                  {activeCategory === "done" && (
+                    <p className="text-sm text-gray-600 flex items-center gap-2">
+                      <svg
+                        className="w-4 h-4 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      Tahun: {project.year}
+                    </p>
+                  )}
+                  {activeCategory === "ongoing" && (
+                    <>
+                      <p className="text-sm text-gray-600 mb-3 flex items-center gap-2">
+                        <svg
+                          className="w-4 h-4 text-gray-500 flex-shrink-0"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        {project.loc || "Lokasi tidak tersedia"}
+                      </p>
+                      <div className="mt-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs font-medium text-gray-600">
+                            Progress
+                          </span>
+                          <span className="text-sm font-bold text-[#0066AE]">
+                            {project.persen || 0}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-[#0066AE] to-[#0088CC] h-2.5 rounded-full transition-all duration-300 ease-out"
+                            style={{ width: `${project.persen || 0}%` }}
+                          />
+                        </div>
+                        {/* Progress status badge */}
+                        {project.persen >= 75 && (
+                          <span className="inline-block mt-2 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                            Hampir Selesai
+                          </span>
+                        )}
+                        {project.persen >= 40 && project.persen < 75 && (
+                          <span className="inline-block mt-2 px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                            Dalam Proses
+                          </span>
+                        )}
+                        {project.persen < 40 && (
+                          <span className="inline-block mt-2 px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                            Tahap Awal
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
+            ))}
+          </div>
+        )}
 
-              {/* Project Info */}
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-800 mb-1">
-                  {project.title}
-                </h3>
-                <p className="text-sm text-gray-600">{project.year}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Add Project Button */}
         <div style={{ marginBottom: "1.5rem" }}>
           <button
             onClick={handleOpenModal}
@@ -446,111 +584,29 @@ const Portofolio = () => {
               alignItems: "center",
               justifyContent: "center",
               gap: "0.5rem",
-              transition: "background-color 0.2s",
-              boxShadow: "none",
-              outline: "none",
-              WebkitAppearance: "none",
-              MozAppearance: "none",
-              appearance: "none",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#005a9e")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#0066AE")
-            }
           >
-            <PlusIcon />
-            Tambah Proyek
-          </button>
-        </div>
-
-        {/* Save Changes Button */}
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <button
-            onClick={handleSaveChanges}
-            style={{
-              backgroundColor: "#0066AE",
-              color: "#ffffff",
-              padding: "0.75rem 2rem",
-              borderRadius: "0.5rem",
-              fontWeight: 500,
-              border: "none",
-              cursor: "pointer",
-              fontSize: "1rem",
-              transition: "background-color 0.2s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#005a9e")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#0066AE")
-            }
-          >
-            Simpan Perubahan
+            <PlusIcon /> Tambah Proyek
           </button>
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* FIX: Modal dengan form sesuai kategori */}
       {isModalOpen && (
         <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            animation: "fadeIn 0.2s ease-out",
-          }}
+          className="fixed inset-0 bg-black/30 flex items-center justify-center z-[9999] animate-fadeIn"
           onClick={handleCloseModal}
         >
           <div
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "0.5rem",
-              boxShadow:
-                "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-              padding: "1.5rem",
-              width: "100%",
-              maxWidth: "28rem",
-              margin: "0 1rem",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              zIndex: 10000,
-              animation: "slideUp 0.3s ease-out",
-            }}
+            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-4 animate-slideUp max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2
-              style={{
-                fontSize: "1.5rem",
-                fontWeight: 700,
-                marginBottom: "1rem",
-                color: "#0066AE",
-              }}
-            >
+            <h2 className="text-xl font-bold mb-4 text-[#0066AE]">
               {isEditMode ? "Edit Proyek" : "Tambah Proyek Baru"}
             </h2>
-
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-            >
+            <div className="flex flex-col gap-4">
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: "#374151",
-                    marginBottom: "0.5rem",
-                  }}
-                >
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Judul Proyek
                 </label>
                 <input
@@ -559,224 +615,117 @@ const Portofolio = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    outline: "none",
-                    fontSize: "1rem",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "#0066AE";
-                    e.target.style.boxShadow =
-                      "0 0 0 2px rgba(0, 102, 174, 0.2)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "#d1d5db";
-                    e.target.style.boxShadow = "none";
-                  }}
+                  className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#0066AE] outline-none"
                   placeholder="Masukkan judul proyek"
                   autoFocus
                 />
               </div>
 
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: "#374151",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Tahun
-                </label>
-                <input
-                  type="number"
-                  value={formData.year}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      year:
-                        parseInt(e.target.value) || new Date().getFullYear(),
-                    })
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    outline: "none",
-                    fontSize: "1rem",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "#0066AE";
-                    e.target.style.boxShadow =
-                      "0 0 0 2px rgba(0, 102, 174, 0.2)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "#d1d5db";
-                    e.target.style.boxShadow = "none";
-                  }}
-                  min="2000"
-                  max="2100"
-                />
-              </div>
+              {/* FIX: Tampilkan Tahun hanya untuk Project Done */}
+              {activeCategory === "done" && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tahun
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.year}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        year:
+                          parseInt(e.target.value) || new Date().getFullYear(),
+                      })
+                    }
+                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#0066AE] outline-none"
+                    min="2000"
+                    max="2100"
+                  />
+                </div>
+              )}
+
+              {/* FIX: Tampilkan Lokasi & Progress untuk Ongoing Project */}
+              {activeCategory === "ongoing" && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Lokasi Proyek
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.loc}
+                      onChange={(e) =>
+                        setFormData({ ...formData, loc: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#0066AE] outline-none"
+                      placeholder="Contoh: Jakarta Selatan"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Progress (%)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.persen}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          persen: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#0066AE] outline-none"
+                      min="0"
+                      max="100"
+                      placeholder="0-100"
+                    />
+                    {/* Preview progress bar */}
+                    <div className="mt-2">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-[#0066AE] h-2 rounded-full transition-all"
+                          style={{ width: `${formData.persen}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1 text-right">
+                        {formData.persen}%
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: "#374151",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  URL Gambar
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Upload Gambar (Max 2MB)
                 </label>
-                <input
-                  type="text"
-                  value={
-                    formData.image.startsWith("data:image")
-                      ? ""
-                      : formData.image
-                  }
-                  onChange={(e) =>
-                    setFormData({ ...formData, image: e.target.value })
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    outline: "none",
-                    fontSize: "1rem",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "#0066AE";
-                    e.target.style.boxShadow =
-                      "0 0 0 2px rgba(0, 102, 174, 0.2)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "#d1d5db";
-                    e.target.style.boxShadow = "none";
-                  }}
-                  placeholder="Masukkan URL gambar (contoh: /design.png)"
-                />
-                <p
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "#6b7280",
-                    marginTop: "0.25rem",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Atau upload gambar dari komputer
-                </p>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    outline: "none",
-                    fontSize: "0.875rem",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "#0066AE";
-                    e.target.style.boxShadow =
-                      "0 0 0 2px rgba(0, 102, 174, 0.2)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "#d1d5db";
-                    e.target.style.boxShadow = "none";
-                  }}
+                  className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#0066AE]"
                 />
                 {formData.image && (
-                  <div style={{ marginTop: "0.5rem" }}>
-                    <p
-                      style={{
-                        fontSize: "0.75rem",
-                        color: "#6b7280",
-                        marginBottom: "0.25rem",
-                      }}
-                    >
-                      Preview:
-                    </p>
+                  <div className="mt-2">
+                    <p className="text-xs text-gray-500 mb-1">Preview:</p>
                     <img
                       src={formData.image}
                       alt="Preview"
-                      style={{
-                        width: "100%",
-                        height: "8rem",
-                        objectFit: "cover",
-                        borderRadius: "0.375rem",
-                        border: "1px solid #e5e7eb",
-                      }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = "none";
-                      }}
+                      className="w-full h-32 object-cover rounded-md border"
                     />
                   </div>
                 )}
               </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "0.75rem",
-                  paddingTop: "0.5rem",
-                }}
-              >
+              <div className="flex justify-end gap-3 pt-2">
                 <button
                   onClick={handleCloseModal}
-                  style={{
-                    padding: "0.5rem 1rem",
-                    backgroundColor: "#d1d5db",
-                    color: "#374151",
-                    borderRadius: "0.375rem",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "1rem",
-                    fontWeight: 500,
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#9ca3af")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#d1d5db")
-                  }
+                  className="px-4 py-2 bg-gray-300 rounded-md text-gray-700"
                 >
                   Batal
                 </button>
                 <button
                   onClick={handleSaveProject}
-                  style={{
-                    backgroundColor: "#0066AE",
-                    color: "#ffffff",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "0.375rem",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "1rem",
-                    fontWeight: 500,
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#005a9e")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#0066AE")
-                  }
+                  className="px-4 py-2 bg-[#0066AE] rounded-md text-white"
                 >
                   {isEditMode ? "Simpan Perubahan" : "Tambah"}
                 </button>
@@ -786,251 +735,93 @@ const Portofolio = () => {
         </div>
       )}
 
-      {/* Error Modal */}
+      {/* Modal Konfirmasi Hapus */}
+      {deleteConfirm.isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000]"
+          onClick={cancelDelete}
+        >
+          <div
+            className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold mb-2">Konfirmasi Hapus</h3>
+            <p className="text-gray-600 mb-6">
+              Apakah Anda yakin ingin menghapus proyek ini?
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 bg-gray-300 rounded-md text-gray-700"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-500 rounded-md text-white"
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Error */}
       {errorModal.isOpen && (
         <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            animation: "fadeIn 0.2s ease-out",
-          }}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10001]"
           onClick={() => setErrorModal({ isOpen: false, message: "" })}
         >
           <div
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "0.5rem",
-              boxShadow:
-                "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-              padding: "1.5rem",
-              width: "100%",
-              maxWidth: "28rem",
-              margin: "0 1rem",
-              zIndex: 10000,
-              animation: "slideUp 0.3s ease-out",
-            }}
+            className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "4rem",
-                height: "4rem",
-                margin: "0 auto 1rem",
-                borderRadius: "50%",
-                backgroundColor: "#fef2f2",
-              }}
+            <h3 className="text-xl font-bold mb-2 text-red-600">Error</h3>
+            <p className="text-gray-600 mb-6">{errorModal.message}</p>
+            <button
+              onClick={() => setErrorModal({ isOpen: false, message: "" })}
+              className="px-4 py-2 bg-[#0066AE] rounded-md text-white"
             >
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#ef4444"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-            </div>
-            <h3
-              style={{
-                fontSize: "1.25rem",
-                fontWeight: 700,
-                textAlign: "center",
-                color: "#1f2937",
-                marginBottom: "0.5rem",
-              }}
-            >
-              Peringatan
-            </h3>
-            <p
-              style={{
-                textAlign: "center",
-                color: "#4b5563",
-                marginBottom: "1.5rem",
-              }}
-            >
-              {errorModal.message}
-            </p>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <button
-                type="button"
-                onClick={() => setErrorModal({ isOpen: false, message: "" })}
-                style={{
-                  padding: "0.625rem 1.5rem",
-                  backgroundColor: "#ef4444",
-                  color: "#ffffff",
-                  borderRadius: "0.5rem",
-                  fontWeight: 500,
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: "1rem",
-                  transition: "background-color 0.2s",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#dc2626")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#ef4444")
-                }
-              >
-                Mengerti
-              </button>
-            </div>
+              Tutup
+            </button>
           </div>
         </div>
       )}
 
-      {/* Success Modal */}
+      {/* Modal Success */}
       {successModal.isOpen && (
         <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            animation: "fadeIn 0.2s ease-out",
-          }}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10001]"
           onClick={() => setSuccessModal({ isOpen: false, message: "" })}
         >
           <div
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "0.5rem",
-              boxShadow:
-                "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-              padding: "1.5rem",
-              width: "100%",
-              maxWidth: "28rem",
-              margin: "0 1rem",
-              zIndex: 10000,
-              animation: "slideUp 0.3s ease-out",
-            }}
+            className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "4rem",
-                height: "4rem",
-                margin: "0 auto 1rem",
-                borderRadius: "50%",
-                backgroundColor: "#d1fae5",
-              }}
+            <h3 className="text-xl font-bold mb-2 text-green-600">Berhasil</h3>
+            <p className="text-gray-600 mb-6">{successModal.message}</p>
+            <button
+              onClick={() => setSuccessModal({ isOpen: false, message: "" })}
+              className="px-4 py-2 bg-[#0066AE] rounded-md text-white"
             >
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#10b981"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </div>
-            <h3
-              style={{
-                fontSize: "1.25rem",
-                fontWeight: 700,
-                textAlign: "center",
-                color: "#1f2937",
-                marginBottom: "0.5rem",
-              }}
-            >
-              Berhasil
-            </h3>
-            <p
-              style={{
-                textAlign: "center",
-                color: "#4b5563",
-                marginBottom: "1.5rem",
-              }}
-            >
-              {successModal.message}
-            </p>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <button
-                type="button"
-                onClick={() => setSuccessModal({ isOpen: false, message: "" })}
-                style={{
-                  padding: "0.625rem 1.5rem",
-                  backgroundColor: "#10b981",
-                  color: "#ffffff",
-                  borderRadius: "0.5rem",
-                  fontWeight: 500,
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: "1rem",
-                  transition: "background-color 0.2s",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#059669")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#10b981")
-                }
-              >
-                Mengerti
-              </button>
-            </div>
+              Tutup
+            </button>
           </div>
         </div>
       )}
 
-      {/* CSS for animations */}
       <style>{`
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
         @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-        .animate-slideUp {
-          animation: slideUp 0.3s ease-out;
-        }
+        .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+        .animate-slideUp { animation: slideUp 0.3s ease-out; }
       `}</style>
     </DashboardLayout>
   );

@@ -31,7 +31,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           top: 0,
           left: 0,
           right: 0,
-          height: "73px",
+          height: "80px",
           backgroundColor: "#ffffff",
           zIndex: 1000,
           margin: 0,

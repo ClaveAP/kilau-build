@@ -1,10 +1,43 @@
-// src/pages/Portofolio.tsx
-import React from "react";
-import { projectsDoneData } from "../../mocks/portfolio-done.mock";
-import { ongoingProjectsData } from "../../mocks/portfolio-ongoing.mock";
-import { interiorDesignsData } from "../../mocks/portfolio-interior.mock";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const Portofolio: React.FC = () => {
+  const [doneProjects, setDoneProjects] = useState<any[]>([]);
+  const [ongoingProjects, setOngoingProjects] = useState<any[]>([]);
+  const [interiorProjects, setInteriorProjects] = useState<any[]>([]);
+
+  const getImageUrl = (img: string) => {
+    if (!img) return "https://placehold.co/600x400?text=No+Image";
+    if (img.startsWith("http")) return img;
+    return `http://127.0.0.1:8000/storage/${img}`;
+  };
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        const resDone = await axios.get(
+          "http://127.0.0.1:8000/api/project-done"
+        );
+        if (resDone.data.success) setDoneProjects(resDone.data.data);
+
+        const resOngoing = await axios.get(
+          "http://127.0.0.1:8000/api/ongoing-project"
+        );
+        if (resOngoing.data.success) setOngoingProjects(resOngoing.data.data);
+
+        const resInterior = await axios.get(
+          "http://127.0.0.1:8000/api/desain-interior"
+        );
+        if (resInterior.data.success)
+          setInteriorProjects(resInterior.data.data);
+      } catch (error) {
+        console.error("Gagal load portofolio:", error);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
   return (
     <main className="pt-20 min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 lg:pb-20">
@@ -16,35 +49,46 @@ const Portofolio: React.FC = () => {
           >
             Project Done
           </h2>
-
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {projectsDoneData.map((project) => (
+            {doneProjects.map((project) => (
               <div
                 key={project.id}
-                className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
               >
-                {/* Image Container - Fixed Aspect Ratio */}
                 <div className="relative w-full pt-[75%] overflow-hidden bg-gray-100">
                   <img
-                    src={project.imageUrl}
-                    alt={project.title}
+                    src={getImageUrl(project.image)}
+                    alt={project.name}
                     loading="lazy"
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
-
-                {/* Content */}
-                <div className="p-4 sm:p-5">
+                <div className="p-4 sm:p-5 flex flex-col flex-grow">
                   <h3
-                    className="font-bold text-base sm:text-lg text-gray-900 mb-1 line-clamp-2 min-h-12"
+                    className="font-bold text-base sm:text-lg text-gray-900 mb-2 line-clamp-2 min-h-12"
                     style={{ fontFamily: "Roboto, sans-serif" }}
                   >
-                    {project.title}
+                    {project.name}
                   </h3>
+
+                  {/* Update: Menambahkan Ikon Kalender di sini */}
                   <p
-                    className="text-sm sm:text-base text-gray-600"
+                    className="text-sm sm:text-base text-gray-600 flex items-center gap-2 mt-auto"
                     style={{ fontFamily: "Inter, sans-serif" }}
                   >
+                    <svg
+                      className="w-4 h-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      ></path>
+                    </svg>
                     {project.year}
                   </p>
                 </div>
@@ -61,30 +105,26 @@ const Portofolio: React.FC = () => {
           >
             Ongoing Project
           </h2>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {ongoingProjectsData.map((project) => (
+            {ongoingProjects.map((project) => (
               <div
                 key={project.id}
                 className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
-                {/* Image Container - Fixed Aspect Ratio */}
                 <div className="relative w-full pt-[66.67%] overflow-hidden bg-gray-100">
                   <img
-                    src={project.imageUrl}
-                    alt={project.title}
+                    src={getImageUrl(project.image)}
+                    alt={project.name}
                     loading="lazy"
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
-
-                {/* Content */}
                 <div className="p-4 sm:p-5">
                   <h3
                     className="font-bold text-base sm:text-lg text-gray-900 mb-3 line-clamp-2 min-h-12"
                     style={{ fontFamily: "Roboto, sans-serif" }}
                   >
-                    {project.title}
+                    {project.name}
                   </h3>
 
                   {/* Location */}
@@ -104,7 +144,7 @@ const Portofolio: React.FC = () => {
                       className="text-sm sm:text-base line-clamp-1"
                       style={{ fontFamily: "Inter, sans-serif" }}
                     >
-                      {project.location}
+                      {project.loc || "Lokasi Proyek"}
                     </span>
                   </div>
 
@@ -121,13 +161,13 @@ const Portofolio: React.FC = () => {
                         className="text-base font-bold text-[#005592]"
                         style={{ fontFamily: "Roboto, sans-serif" }}
                       >
-                        {project.completionPercentage}%
+                        {project.persen || 0}%
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                       <div
                         className="bg-[#005592] h-2.5 rounded-full transition-all duration-300"
-                        style={{ width: `${project.completionPercentage}%` }}
+                        style={{ width: `${project.persen || 0}%` }}
                       />
                     </div>
                   </div>
@@ -145,30 +185,26 @@ const Portofolio: React.FC = () => {
           >
             Design Interior
           </h2>
-
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {interiorDesignsData.map((project) => (
+            {interiorProjects.map((project) => (
               <div
                 key={project.id}
                 className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
-                {/* Image Container - Fixed Aspect Ratio */}
                 <div className="relative w-full pt-[75%] overflow-hidden bg-gray-100">
                   <img
-                    src={project.imageUrl}
-                    alt={project.title}
+                    src={getImageUrl(project.image)}
+                    alt={project.name}
                     loading="lazy"
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
-
-                {/* Content */}
                 <div className="p-4 sm:p-5">
                   <h3
                     className="font-bold text-base sm:text-lg text-gray-900 line-clamp-2 min-h-12"
                     style={{ fontFamily: "Roboto, sans-serif" }}
                   >
-                    {project.title}
+                    {project.name}
                   </h3>
                 </div>
               </div>

@@ -1,21 +1,58 @@
-import React from "react";
-// Import Data dan Helper
-import {
-  MOCK_KONTAK_DATA,
-  getContactByType,
-  convertToEmbedUrl,
-} from "../../mocks/contact.mock";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const PetaLokasi: React.FC = () => {
-  // Ambil data lokasi dari Mock Data
-  const lokasiData = getContactByType(MOCK_KONTAK_DATA, "lokasi");
+  const [mapUrl, setMapUrl] = useState<string>("");
 
-  // Convert URL (Menjaga kompatibilitas jika Admin input link biasa)
-  const mapUrl = lokasiData?.mapsUrl
-    ? convertToEmbedUrl(lokasiData.mapsUrl)
-    : ""; // Fallback jika kosong
+  // Helper untuk convert URL Google Maps ke Embed
+  const convertToEmbedUrl = (url: string): string => {
+    if (!url) return "";
+    // Cek jika link pendek (tidak support embed)
+    if (url.includes("maps.app.goo.gl")) return "";
 
-  if (!mapUrl) return null; // Jangan render section jika tidak ada URL map
+    if (url.includes("/maps/embed")) return url;
+
+    try {
+      // Format: https://www.google.com/maps?q=lat,lng
+      if (url.includes("?q=")) {
+        const match = url.match(/[?&]q=([^&]+)/);
+        if (match && match[1]) {
+          return `https://www.google.com/maps?q=${match[1]}&hl=id&z=14&output=embed`;
+        }
+      }
+      // Format: https://www.google.com/maps/@lat,lng,zoom (Paling umum)
+      const match2 = url.match(/@([^,]+),([^,]+)/);
+      if (match2) {
+        return `https://www.google.com/maps?q=${match2[1]},${match2[2]}&hl=id&z=14&output=embed`;
+      }
+
+      // Jika tidak ada pola yang cocok, return kosong agar tidak blank
+      return "";
+    } catch (e) {
+      return "";
+    }
+  };
+
+  useEffect(() => {
+    const fetchLokasi = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/contact");
+        if (response.data.success && response.data.data.length > 0) {
+          const data = response.data.data[0];
+          if (data.link_gmaps) {
+            setMapUrl(convertToEmbedUrl(data.link_gmaps));
+          }
+        }
+      } catch (error) {
+        console.error("Gagal mengambil peta lokasi:", error);
+      }
+    };
+
+    fetchLokasi();
+  }, []);
+
+  // Jika URL hasil convert kosong (karena link pendek atau error), section ini disembunyikan
+  if (!mapUrl) return null;
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-white">
@@ -37,7 +74,7 @@ const PetaLokasi: React.FC = () => {
 
         <div className="w-full max-w-6xl mx-auto aspect-video">
           <iframe
-            src={mapUrl} // Menggunakan URL dinamis dari Mock Data
+            src={mapUrl}
             className="w-full h-full border-2 border-gray-200 rounded-3xl shadow-sm"
             allowFullScreen={true}
             loading="lazy"

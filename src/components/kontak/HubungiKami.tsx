@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, Phone, Mail } from "lucide-react";
-// IMPORT MOCK DATA
-import { MOCK_KONTAK_DATA, getContactByType } from "../../mocks/contact.mock"; // Sesuaikan path import
+import axios from "axios";
 
 const HubungiKami: React.FC = () => {
-  // State untuk menampung data kontak (simulasi fetch)
-  const [kontakInfo, setKontakInfo] = useState(MOCK_KONTAK_DATA);
+  // State untuk menampung data kontak dari API
+  const [contactData, setContactData] = useState<any>(null);
 
-  // Ambil data spesifik
-  const lokasi = getContactByType(kontakInfo, "lokasi");
-  const telepon = getContactByType(kontakInfo, "kontak");
-  const email = getContactByType(kontakInfo, "email");
+  // Fetch Data dari Laravel
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/contact");
+        if (response.data.success && response.data.data.length > 0) {
+          //  Ambil data pertama (Kantor Utama)
+          setContactData(response.data.data[0]);
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data kontak:", error);
+      }
+    };
+
+    fetchContact();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -19,7 +30,7 @@ const HubungiKami: React.FC = () => {
     message: "",
   });
 
-  // ... (Bagian Logic Form Submit JANGAN DIUBAH / Tetap Sama) ...
+  // ... (Bagian Logic Form Submit Google Form TETAP SAMA/JANGAN UBAH) ...
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
     null
@@ -65,7 +76,6 @@ const HubungiKami: React.FC = () => {
       setTimeout(() => setSubmitStatus(null), 3000);
     }
   };
-  // ... (Akhir Logic Form) ...
 
   return (
     <div className="pt-20 min-h-screen bg-white">
@@ -97,10 +107,10 @@ const HubungiKami: React.FC = () => {
                 </p>
               </div>
 
-              {/* Info Kontak Dinamis */}
+              {/* Info Kontak (Dari Database) */}
               <div className="space-y-8 sm:space-y-10">
                 {/* Lokasi */}
-                {lokasi && (
+                {contactData?.alamat && (
                   <div className="flex items-start gap-4 sm:gap-6">
                     <div className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-[#005592] rounded-full flex items-center justify-center">
                       <MapPin className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
@@ -116,14 +126,14 @@ const HubungiKami: React.FC = () => {
                         className="text-base sm:text-lg text-gray-700 leading-relaxed"
                         style={{ fontFamily: "Inter, sans-serif" }}
                       >
-                        {lokasi.value}
+                        {contactData.alamat}
                       </p>
                     </div>
                   </div>
                 )}
 
                 {/* Kontak / Telepon */}
-                {telepon && (
+                {contactData?.no_telp && (
                   <div className="flex items-start gap-4 sm:gap-6">
                     <div className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-[#005592] rounded-full flex items-center justify-center">
                       <Phone className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
@@ -136,18 +146,21 @@ const HubungiKami: React.FC = () => {
                         Kontak
                       </h3>
                       <a
-                        href={`tel:${telepon.value.replace(/[^0-9+]/g, "")}`} // Membersihkan karakter non-angka untuk href
+                        href={`tel:${contactData.no_telp.replace(
+                          /[^0-9+]/g,
+                          ""
+                        )}`}
                         className="text-base sm:text-lg text-gray-700 hover:text-[#005592] transition-colors"
                         style={{ fontFamily: "Inter, sans-serif" }}
                       >
-                        {telepon.value}
+                        {contactData.no_telp}
                       </a>
                     </div>
                   </div>
                 )}
 
                 {/* Email */}
-                {email && (
+                {contactData?.email && (
                   <div className="flex items-start gap-4 sm:gap-6">
                     <div className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-[#005592] rounded-full flex items-center justify-center">
                       <Mail className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
@@ -160,21 +173,27 @@ const HubungiKami: React.FC = () => {
                         Email
                       </h3>
                       <a
-                        href={`mailto:${email.value}`}
+                        href={`mailto:${contactData.email}`}
                         className="text-base sm:text-lg text-gray-700 hover:text-[#005592] transition-colors"
                         style={{ fontFamily: "Inter, sans-serif" }}
                       >
-                        {email.value}
+                        {contactData.email}
                       </a>
                     </div>
+                  </div>
+                )}
+
+                {/* Loading State jika data belum muncul */}
+                {!contactData && (
+                  <div className="text-gray-400 italic">
+                    Memuat informasi kontak...
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Kolom Kanan: Form Kontak (Tidak Berubah) */}
+            {/* Form Kontak */}
             <div className="bg-white border-2 border-gray-200 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-sm">
-              {/* ... Kode Form Tetap Sama ... */}
               <h2
                 className="text-2xl sm:text-3xl font-bold text-[#005592] mb-6 sm:mb-8"
                 style={{ fontFamily: "Roboto, sans-serif" }}
@@ -182,7 +201,6 @@ const HubungiKami: React.FC = () => {
                 Kirimkan Saran Anda di Sini
               </h2>
               <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-                {/* Input fields sama seperti sebelumnya, saya singkat agar fokus ke perubahan */}
                 <input
                   type="text"
                   name="name"
