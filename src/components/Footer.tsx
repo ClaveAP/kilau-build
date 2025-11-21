@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom"; //    Biar link-nya nggak nge-refresh halaman
+import { Link } from "react-router-dom";
 
 const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({
   href,

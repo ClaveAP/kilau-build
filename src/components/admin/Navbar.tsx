@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { logout } from "../../utils/auth";
-
-const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 interface NavbarProps {
   onToggleSidebar: () => void;
@@ -55,8 +52,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
   const handleProfile = () => {
     setIsDropdownOpen(false);
-    // Navigate to profile page (jika ada)
-    // navigate('/admin/profile');
   };
 
   // Get initials from admin name

@@ -1,4 +1,3 @@
-// src/mocks/features.mock.ts
 export const featuresData = [
   {
     id: 1,

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-// Interface lokal
 interface StatItem {
   id: number;
   label: string;
@@ -11,18 +10,16 @@ interface StatItem {
 const StatsTentangKami: React.FC = () => {
   const [hasStartedCount, setHasStartedCount] = useState(false);
 
-  // State Data Real
   const [statsData, setStatsData] = useState<StatItem[]>([
     { id: 1, label: "Tahun Pengalaman", value: "0+" },
     { id: 2, label: "Proyek Selesai", value: "0+" },
     { id: 3, label: "Klien Puas", value: "0+" },
-    { id: 4, label: "Kota", value: "0+" }, // Label sesuaikan UI
+    { id: 4, label: "Kota", value: "0+" },
   ]);
 
   useEffect(() => {
     setHasStartedCount(true);
 
-    // Fetch Data API
     const fetchStats = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/statistic");
@@ -32,7 +29,7 @@ const StatsTentangKami: React.FC = () => {
             { id: 1, label: "Tahun Pengalaman", value: data.tahun_pengalaman },
             { id: 2, label: "Proyek Selesai", value: data.proyek_selesai },
             { id: 3, label: "Klien Puas", value: data.klien_puas },
-            { id: 4, label: "Kota", value: data.sebaran_kota }, // Mapping 'sebaran_kota' -> 'Kota'
+            { id: 4, label: "Kota", value: data.sebaran_kota },
           ]);
         }
       } catch (error) {
@@ -66,7 +63,6 @@ const StatsTentangKami: React.FC = () => {
     return count;
   };
 
-  // Component Wrapper untuk render angka agar hooks aman
   const StatItemDisplay = ({
     value,
     label,

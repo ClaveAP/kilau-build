@@ -1,5 +1,3 @@
-// src/mocks/tentang-kami.mock.ts
-
 export const aboutPageData = {
   hero: {
     title: "Tentang Kami",

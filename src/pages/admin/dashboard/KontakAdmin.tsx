@@ -3,7 +3,6 @@ import DashboardLayout from "../../../layouts/DashboardLayout";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import axios from "axios";
 
-// Define Type Lokal agar tidak error
 interface KontakItem {
   id: number;
   type: "lokasi" | "kontak" | "email";
@@ -17,18 +16,15 @@ interface KontakItem {
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 const KontakAdmin = () => {
-  // State Data Utama
   const [kontakData, setKontakData] = useState<KontakItem[]>([]);
   const [dbId, setDbId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Token Auth
   const token = localStorage.getItem("admin_token");
   const authConfig = {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  // --- 1. FETCH DATA DARI DATABASE ---
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -60,7 +56,6 @@ const KontakAdmin = () => {
           ];
           setKontakData(mappedData);
         } else {
-          // Jika database kosong, inisialisasi kosong
           setKontakData([]);
         }
       } catch (error) {
@@ -80,7 +75,6 @@ const KontakAdmin = () => {
   >(null);
   const [newValue, setNewValue] = useState<string>("");
 
-  // State Modal Delete
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     id: number | null;
@@ -259,11 +253,9 @@ const KontakAdmin = () => {
     }
   };
 
-  // --- 2. SIMPAN KE DATABASE (LOGIC REAL) ---
   const handleSaveChanges = async () => {
     setIsLoading(true);
 
-    // Ambil data dari state UI dan gabungkan jadi 1 object
     const lokasiItem = kontakData.find((k) => k.type === "lokasi");
     const kontakItem = kontakData.find((k) => k.type === "kontak");
     const emailItem = kontakData.find((k) => k.type === "email");
@@ -414,10 +406,10 @@ const KontakAdmin = () => {
                   if (isEditingThis && isLocationType && isEditingLocation) {
                     return (
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
+                        <div className="shrink-0 mt-1">
                           {getIcon(item.type)}
                         </div>
-                        <div className="flex-grow space-y-3">
+                        <div className="grow space-y-3">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Alamat Lengkap
@@ -486,10 +478,10 @@ const KontakAdmin = () => {
                   } else if (isEditingThis && !isLocationType) {
                     return (
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
+                        <div className="shrink-0 mt-1">
                           {getIcon(item.type)}
                         </div>
-                        <div className="flex-grow">
+                        <div className="grow">
                           <input
                             type="text"
                             value={editValue}
@@ -517,10 +509,10 @@ const KontakAdmin = () => {
                   } else {
                     return (
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
+                        <div className="shrink-0 mt-1">
                           {getIcon(item.type)}
                         </div>
-                        <div className="flex-grow">
+                        <div className="grow">
                           <h3 className="font-semibold text-gray-800 mb-1">
                             {getLabel(item.type)}
                           </h3>
@@ -533,7 +525,7 @@ const KontakAdmin = () => {
                             </div>
                           )}
                         </div>
-                        <div className="flex-shrink-0 flex gap-2">
+                        <div className="shrink-0 flex gap-2">
                           <button
                             onClick={() => handleEdit(item.id)}
                             className="px-3 py-1.5 bg-[#0066AE] text-white text-sm rounded-md flex items-center gap-1"

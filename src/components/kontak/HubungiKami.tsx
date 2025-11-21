@@ -3,16 +3,13 @@ import { MapPin, Phone, Mail } from "lucide-react";
 import axios from "axios";
 
 const HubungiKami: React.FC = () => {
-  // State untuk menampung data kontak dari API
   const [contactData, setContactData] = useState<any>(null);
 
-  // Fetch Data dari Laravel
   useEffect(() => {
     const fetchContact = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/contact");
         if (response.data.success && response.data.data.length > 0) {
-          //  Ambil data pertama (Kantor Utama)
           setContactData(response.data.data[0]);
         }
       } catch (error) {
@@ -30,7 +27,6 @@ const HubungiKami: React.FC = () => {
     message: "",
   });
 
-  // ... (Bagian Logic Form Submit Google Form TETAP SAMA/JANGAN UBAH) ...
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
     null

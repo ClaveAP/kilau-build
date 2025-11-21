@@ -5,17 +5,14 @@ import axios from "axios";
 const FAQ = () => {
   const [faqs, setFaqs] = useState<any[]>([]);
 
-  // 1. AMBIL TOKEN DARI LOCALSTORAGE
   const token = localStorage.getItem("admin_token");
 
-  // 2. KONFIGURASI HEADER UNTUK REQUEST POST/PUT/DELETE
   const authConfig = {
     headers: {
-      Authorization: `Bearer ${token}`, // Wajib ada untuk route protected
+      Authorization: `Bearer ${token}`,
     },
   };
 
-  // Fetch Data (GET boleh tanpa token karena route-nya public di api.php)
   function fetchFaqs() {
     axios
       .get("http://127.0.0.1:8000/api/faq")
@@ -68,7 +65,6 @@ const FAQ = () => {
     }
   };
 
-  // --- FUNGSI UPDATE (Perbaikan: Tambah Auth Header) ---
   const handleSaveEdit = () => {
     if (editingId) {
       if (!editQuestion.trim() || !editAnswer.trim()) {
@@ -79,7 +75,6 @@ const FAQ = () => {
         return;
       }
 
-      // PUT request dengan token
       axios
         .put(
           `http://127.0.0.1:8000/api/faq/${editingId}`,
@@ -87,10 +82,10 @@ const FAQ = () => {
             question: editQuestion.trim(),
             answer: editAnswer.trim(),
           },
-          authConfig // <-- PENTING: Bawa token
+          authConfig
         )
         .then(() => {
-          fetchFaqs(); // Refresh data setelah sukses
+          fetchFaqs();
           setEditingId(null);
           setEditQuestion("");
           setEditAnswer("");
@@ -119,16 +114,12 @@ const FAQ = () => {
     setDeleteConfirm({ isOpen: true, id });
   };
 
-  // --- FUNGSI DELETE (Perbaikan: Tambah Auth Header) ---
   const confirmDelete = () => {
     if (deleteConfirm.id) {
       axios
-        .delete(
-          `http://127.0.0.1:8000/api/faq/${deleteConfirm.id}`,
-          authConfig // <-- PENTING: Bawa token
-        )
+        .delete(`http://127.0.0.1:8000/api/faq/${deleteConfirm.id}`, authConfig)
         .then(() => {
-          fetchFaqs(); // Refresh data setelah sukses
+          fetchFaqs();
           if (expandedId === deleteConfirm.id) {
             setExpandedId(null);
           }
@@ -162,7 +153,6 @@ const FAQ = () => {
     setNewAnswer("");
   };
 
-  // --- FUNGSI CREATE (Perbaikan: Tambah Auth Header) ---
   const handleSaveAdd = async () => {
     if (!newQuestion.trim() || !newAnswer.trim()) {
       setErrorModal({
@@ -172,7 +162,6 @@ const FAQ = () => {
       return;
     }
 
-    // POST request dengan token
     axios
       .post(
         "http://127.0.0.1:8000/api/faq",
@@ -180,11 +169,11 @@ const FAQ = () => {
           question: newQuestion,
           answer: newAnswer,
         },
-        authConfig // <-- PENTING: Bawa token
+        authConfig
       )
       .then((response) => {
         console.log("Created:", response.data.data);
-        fetchFaqs(); // Refresh data setelah sukses
+        fetchFaqs();
         handleCloseModal();
         setSuccessModal({
           isOpen: true,
@@ -271,7 +260,6 @@ const FAQ = () => {
           FAQ (Frequently Asked Questions)
         </h1>
 
-        {/* FAQ List Container */}
         <div
           className={`space-y-3 mb-4 p-2 ${
             faqs.length > 6 ? "max-h-[60vh] overflow-y-auto" : ""
@@ -283,7 +271,6 @@ const FAQ = () => {
               className="bg-[#E3F2FD] rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-[#BBDEFB]"
             >
               {editingId === faq.id ? (
-                // Edit Mode
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -326,7 +313,6 @@ const FAQ = () => {
                   </div>
                 </div>
               ) : (
-                // View Mode
                 <div>
                   <div className="flex justify-between items-start gap-3">
                     <button

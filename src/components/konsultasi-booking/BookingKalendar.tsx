@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-// --- Konfigurasi API Google ---
 declare global {
   interface Window {
     gapi: any;
@@ -114,9 +113,6 @@ const BookingKalendar: React.FC = () => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-
-    // --- PERUBAHAN DI SINI ---
-    // Menggunakan getDay() secara langsung (0=Minggu, 1=Senin, dst.)
     const startOffset = firstDay.getDay();
 
     const days: (number | null)[] = [];
@@ -161,8 +157,6 @@ const BookingKalendar: React.FC = () => {
     window.open(whatsappUrl, "_blank");
   };
 
-  // --- 6. Render UI ---
-  // --- PERUBAHAN DI SINI ---
   const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
   const days = getDaysInMonth(currentMonth);
 

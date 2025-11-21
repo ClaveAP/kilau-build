@@ -16,7 +16,6 @@ import FaqSection from "../components/home/FaqSection";
 import TestimonialsSection from "../components/home/TestimonialsSection";
 const Home: React.FC = () => {
   return (
-    // 'pt-20' ini asumsi dari header/navbar kamu
     <main className="pt-20">
       <HeroSection />
       <AboutSection />

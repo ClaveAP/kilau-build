@@ -80,7 +80,7 @@ const LocationSection: React.FC = () => {
             </p>
           </div>
 
-          {/* Kolom Kanan: Peta & Alamat Dinamis */}
+          {/* Kolom Kanan: Peta & Alamat */}
           <div className="flex justify-center md:justify-end">
             <div className="w-full max-w-lg border-4 border-[#005592] rounded-2xl p-4 sm:p-6 shadow-lg">
               {/* Container Peta */}
@@ -108,7 +108,7 @@ const LocationSection: React.FC = () => {
                 )}
               </div>
 
-              {/* Alamat Dinamis */}
+              {/* Alamat */}
               <p
                 className="text-center text-sm sm:text-base text-gray-700 mt-4"
                 style={{ fontFamily: "Inter, sans-serif" }}

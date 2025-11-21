@@ -2,23 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
-
-// Swiper Imports
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-// --- CONFIGURATION ---
+
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
-// --- HELPER ---
 const getImageUrl = (img: string) => {
   if (!img) return "https://placehold.co/600x400?text=No+Image";
   if (img.startsWith("http")) return img;
   return `http://127.0.0.1:8000/storage/${img}`;
 };
 
-// --- COMPONENTS VISUAL ---
-
-// 1. Ikon Instagram Gradient (Kecil)
 const InstagramBadge = () => (
   <div className="w-6 h-6 bg-linear-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] rounded-md flex items-center justify-center shrink-0 shadow-sm">
     <svg
@@ -31,7 +25,7 @@ const InstagramBadge = () => (
   </div>
 );
 
-// 2. Bintang Rating
+// ==== Bintang Rating =====
 const StarRating = ({ rating }: { rating: number }) => (
   <div className="flex justify-center gap-1">
     {[1, 2, 3, 4, 5].map((star) => (
@@ -49,7 +43,7 @@ const StarRating = ({ rating }: { rating: number }) => (
   </div>
 );
 
-// 3. Komponen FAQ Accordion
+// ==== FAQ ====
 const FaqItemAdmin: React.FC<{
   item: any;
   isOpen: boolean;
@@ -106,7 +100,7 @@ const FaqItemAdmin: React.FC<{
 const Beranda = () => {
   const navigate = useNavigate();
 
-  // --- STATE DATA ---
+  // ==== STATE DATA ====
   const [statistikData, setStatistikData] = useState<any[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [kontakData, setKontakData] = useState<any[]>([]);
@@ -120,7 +114,6 @@ const Beranda = () => {
     setOpenFAQ(openFAQ === index ? null : index);
   };
 
-  // --- FETCH ALL DATA ---
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -180,7 +173,7 @@ const Beranda = () => {
               id: p.id,
               title: p.title,
               description: p.title,
-              // Format tanggal singkat: "20 Nov 2025"
+
               date: new Date(p.created_at).toLocaleDateString("id-ID", {
                 day: "numeric",
                 month: "short",
@@ -220,9 +213,7 @@ const Beranda = () => {
 
   return (
     <DashboardLayout>
-      {/* Container Utama: Tidak pakai margin negatif lagi, padding normal */}
       <div className="flex flex-col w-full space-y-12 p-4">
-        {/* --- STATISTIK SECTION --- */}
         <section>
           <h2 className="text-3xl font-bold text-[#005592] text-center mb-8">
             Statistik Perusahaan
@@ -254,10 +245,8 @@ const Beranda = () => {
           </div>
         </section>
 
-        {/* DIVIDER */}
         <hr className="border-gray-200" />
 
-        {/* --- PORTOFOLIO SECTION --- */}
         <section>
           <h2 className="text-3xl font-bold text-[#005592] text-center mb-8">
             Portofolio
@@ -305,7 +294,6 @@ const Beranda = () => {
           </div>
         </section>
 
-        {/* DIVIDER */}
         <hr className="border-gray-200" />
 
         {/* --- TESTIMONI SECTION --- */}
@@ -343,7 +331,7 @@ const Beranda = () => {
                       </div>
 
                       {/* Isi Testimoni */}
-                      <p className="text-[11px] text-gray-600 leading-relaxed mb-4 flex-grow line-clamp-4">
+                      <p className="text-[11px] text-gray-600 leading-relaxed mb-4 grow line-clamp-4">
                         {t.text}
                       </p>
 
@@ -399,10 +387,9 @@ const Beranda = () => {
           </div>
         </section>
 
-        {/* DIVIDER */}
         <hr className="border-gray-200" />
 
-        {/* --- KONTAK SECTION (Vertical Layout) --- */}
+        {/* --- KONTAK SECTION */}
         <section>
           <h2 className="text-3xl font-bold text-[#005592] text-center mb-10">
             Kontak
@@ -480,7 +467,6 @@ const Beranda = () => {
           </div>
         </section>
 
-        {/* DIVIDER */}
         <hr className="border-gray-200" />
 
         {/* --- KELOLA FAQ SECTION --- */}
@@ -516,10 +502,9 @@ const Beranda = () => {
           </div>
         </section>
 
-        {/* DIVIDER */}
         <hr className="border-gray-200" />
 
-        {/* --- MEDIA SOSIAL (KilauTips) --- */}
+        {/* --- MEDIA SOSIAL --- */}
         <section>
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-[#005592] mb-10">

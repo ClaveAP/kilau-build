@@ -76,7 +76,6 @@ const Portofolio = () => {
     id: number | null;
   }>({ isOpen: false, id: null });
 
-  // FIX: Tambahkan loc dan persen ke formData
   const [formData, setFormData] = useState({
     title: "",
     year: new Date().getFullYear(),
@@ -121,7 +120,6 @@ const Portofolio = () => {
 
   const handleEdit = (project: Project) => {
     setEditingProject(project);
-    // FIX: Set all form data including loc and persen
     setFormData({
       title: project.title,
       year: project.year,
@@ -175,7 +173,7 @@ const Portofolio = () => {
   const handleOpenModal = () => {
     setIsEditMode(false);
     setEditingProject(null);
-    // FIX: Reset all form data
+
     setFormData({
       title: "",
       year: new Date().getFullYear(),
@@ -229,7 +227,6 @@ const Portofolio = () => {
       return;
     }
 
-    // FIX: Validasi khusus ongoing project
     if (activeCategory === "ongoing") {
       if (!formData.loc.trim()) {
         setErrorModal({ isOpen: true, message: "Lokasi tidak boleh kosong!" });
@@ -247,7 +244,6 @@ const Portofolio = () => {
     const dataToSend = new FormData();
     dataToSend.append("name", formData.title);
 
-    // FIX: Kirim data sesuai kategori
     if (activeCategory === "done") {
       dataToSend.append("year", formData.year.toString());
       dataToSend.append("desc", "-"); // Required by backend
@@ -255,7 +251,6 @@ const Portofolio = () => {
       dataToSend.append("loc", formData.loc);
       dataToSend.append("persen", formData.persen.toString());
     }
-    // Interior hanya butuh name dan image
 
     if (imageFile) {
       dataToSend.append("image", imageFile);
@@ -293,7 +288,7 @@ const Portofolio = () => {
       });
     } catch (error: any) {
       console.error("Gagal simpan:", error);
-      console.error("Error response:", error.response?.data); // FIX: Better error logging
+      console.error("Error response:", error.response?.data);
       let msg = "Gagal menyimpan data.";
       if (error.response?.data?.message) msg = error.response.data.message;
       if (error.response?.status === 413)
@@ -539,7 +534,7 @@ const Portofolio = () => {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-[#0066AE] to-[#0088CC] h-2.5 rounded-full transition-all duration-300 ease-out"
+                            className="bg-linear-to-r from-[#0066AE] to-[#0088CC] h-2.5 rounded-full transition-all duration-300 ease-out"
                             style={{ width: `${project.persen || 0}%` }}
                           />
                         </div>
@@ -621,7 +616,6 @@ const Portofolio = () => {
                 />
               </div>
 
-              {/* FIX: Tampilkan Tahun hanya untuk Project Done */}
               {activeCategory === "done" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -644,7 +638,6 @@ const Portofolio = () => {
                 </div>
               )}
 
-              {/* FIX: Tampilkan Lokasi & Progress untuk Ongoing Project */}
               {activeCategory === "ongoing" && (
                 <>
                   <div>

@@ -4,7 +4,6 @@ import axios from "axios";
 const PetaLokasi: React.FC = () => {
   const [mapUrl, setMapUrl] = useState<string>("");
 
-  // Helper untuk convert URL Google Maps ke Embed
   const convertToEmbedUrl = (url: string): string => {
     if (!url) return "";
     // Cek jika link pendek (tidak support embed)

@@ -18,7 +18,6 @@ const AboutSection: React.FC = () => {
   const controls = useAnimation();
   const [hasStartedCount, setHasStartedCount] = useState(false);
 
-  // DATA REAL
   const [stats, setStats] = useState<StatItem[]>([
     { id: 1, label: "Tahun Pengalaman", value: "0+" },
     { id: 2, label: "Proyek Selesai", value: "0+" },

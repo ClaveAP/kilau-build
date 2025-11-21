@@ -1,13 +1,8 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-// CSS UTAMA
 import "swiper/swiper.min.css";
-
-// CSS UNTUK NAVIGATION (panah next/prev)
 import "swiper/modules/navigation/navigation.min.css";
-
-// CSS UNTUK PAGINATION (titik-titik di bawah)
 import "swiper/modules/pagination/pagination.min.css";
 
 interface InstagramPost {

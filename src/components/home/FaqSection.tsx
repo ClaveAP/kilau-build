@@ -1,9 +1,6 @@
-// src/components/home/FaqSection.tsx
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-// Komponen FaqItem (tanpa tombol edit)
 const FaqItem: React.FC<{
   item: { id: number; question: string; answer: string };
   isOpen: boolean;

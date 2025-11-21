@@ -1,7 +1,5 @@
-// src/components/konsultasi-booking/HeroKonsultasiBooking.tsx
 import React from "react";
-import header from "../../assets/header-hk.png"; // Ganti dengan path gambar yang sesuai
-
+import header from "../../assets/header-hk.png";
 const HeroKonsultasiBooking: React.FC = () => {
   return (
     <section
@@ -18,7 +16,6 @@ const HeroKonsultasiBooking: React.FC = () => {
       {/* Content */}
       <div className="relative z-10 py-20 sm:py-24 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Judul */}
           <h1
             className="text-3xl sm:text-4xl lg:text-5xl xl:text-[56px] font-bold mb-6 leading-tight"
             style={{ fontFamily: "Roboto, sans-serif" }}
@@ -26,7 +23,6 @@ const HeroKonsultasiBooking: React.FC = () => {
             Contact Us
           </h1>
 
-          {/* Deskripsi */}
           <p
             className="text-base sm:text-lg lg:text-xl mb-10 max-w-4xl mx-auto leading-relaxed"
             style={{ fontFamily: "Inter, sans-serif" }}

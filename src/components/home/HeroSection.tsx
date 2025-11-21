@@ -4,16 +4,12 @@ import Header from "../../assets/header.png";
 const HeroSection: React.FC = () => {
   return (
     <section className="relative w-full h-[400px] sm:h-[500px] md:h-[565px] overflow-hidden">
-      {/* Background Image */}
       <img
         src={Header}
         alt="Construction background"
-        // 🔽 REVISI: 'object-cover' ditambahin 'object-top' 🔽
-        // Ini akan "maksa" bagian atas gambar tetap kelihatan
         className="absolute inset-0 w-full h-full object-cover object-top"
       />
 
-      {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-linear-to-r from-[#005592]/95 via-[#005592]/85 to-[#005592]/20"></div>
 
       {/* Content */}
@@ -33,7 +29,6 @@ const HeroSection: React.FC = () => {
               Solusi terbaik untuk membangun atau merenovasi rumah impian anda
             </p>
 
-            {/* Link WA (tetap sama) */}
             <a
               href="https://wa.me/6287776360795?text=Halo%20admin%20Kilau,%20saya%20mau%20booking%21"
               target="_blank"

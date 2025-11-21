@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import axios from "axios";
 
-// Interface Lokal
 interface TestimonialItem {
   id: number;
   name: string;
@@ -10,7 +9,6 @@ interface TestimonialItem {
   stars: number;
 }
 
-// Komponen bintang (tetap sama)
 const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
   return (
     <div className="flex justify-center gap-1">
@@ -35,21 +33,18 @@ const TestimonialsSection: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
-  // STATE DATA REAL
   const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
 
-  // 1. FETCH DATA DARI API
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/testimoni");
         if (response.data.success) {
-          // Mapping data DB (review, star) -> ke Format UI (text, stars)
           const mappedData = response.data.data.map((item: any) => ({
             id: item.id,
             name: item.name,
-            text: item.review, // Database pakai 'review'
-            stars: item.star, // Database pakai 'star'
+            text: item.review,
+            stars: item.star,
           }));
           setTestimonials(mappedData);
         }
@@ -82,7 +77,6 @@ const TestimonialsSection: React.FC = () => {
     if (!emblaApi) return;
     setScrollSnaps(emblaApi.scrollSnapList());
     emblaApi.on("select", onSelect);
-    // Re-init embla saat data berubah agar slider tidak rusak
     emblaApi.reInit();
   }, [emblaApi, onSelect, testimonials]);
 

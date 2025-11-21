@@ -34,14 +34,8 @@ const Navbar: React.FC = () => {
         isScrolled ? "bg-white shadow-md" : "bg-white"
       }`}
     >
-      {/* PERUBAHAN DI SINI: 
-          1. Menghapus 'max-w-7xl mx-auto' agar tidak terpusat di tengah.
-          2. Mengganti menjadi 'w-full' agar lebar penuh dari ujung kiri ke kanan.
-          3. Mengatur px-6 lg:px-10 agar 'pentok' tapi tetap ada jarak manis sedikit dari pinggir layar.
-      */}
       <div className="w-full px-6 lg:px-10">
         <div className="flex justify-between items-center h-20">
-          {/* Logo (Otomatis di Kiri karena justify-between) */}
           <Link to="/" className="flex items-center">
             <img
               src="/logo.png"

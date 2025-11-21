@@ -117,9 +117,6 @@ const BookingSection: React.FC = () => {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
 
-    // ✅ PERUBAHAN UTAMA: Day 0=Minggu, 1=Senin, dst.
-    // Jika hari pertama bulan adalah Minggu (0), offsetnya 0.
-    // Jika hari pertama bulan adalah Senin (1), offsetnya 1, dst.
     const startOffset = firstDay.getDay();
 
     const days: (number | null)[] = [];
@@ -161,8 +158,6 @@ const BookingSection: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // --- 6. Render UI ---
-  // ✅ PERUBAHAN: Minggu (Su) diletakkan di awal
   const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
   const days = getDaysInMonth(currentMonth);
 
@@ -278,8 +273,6 @@ const BookingSection: React.FC = () => {
                     const booked = isDateBooked(day);
                     const today = isToday(day);
 
-                    // Hitung indeks hari dalam seminggu (0=Minggu, 6=Sabtu)
-                    // Ini digunakan untuk menentukan warna merah pada hari Minggu
                     const dayOfWeek = day
                       ? new Date(
                           currentMonth.getFullYear(),

@@ -121,7 +121,7 @@ const HomePortfolioSection: React.FC = () => {
                   {item.title}
                 </h3>
                 <p className="text-sm text-gray-500 mt-auto flex items-center gap-1">
-                  {/* Icon kecil opsional */}
+                  {/* Icon kecil */}
                   <svg
                     className="w-4 h-4"
                     fill="none"

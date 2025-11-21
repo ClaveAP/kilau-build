@@ -2,21 +2,16 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
 
-// Hapus Context, kita ganti dengan API
-// import { useStatistik } from "../../../contexts/StatistikContext";
-
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
-// Interface Data
 interface StatistikItem {
   id: number;
   label: string;
   value: string;
-  dbField: string; // Mapping ke kolom database
+  dbField: string;
 }
 
 const Statistik = () => {
-  // State Utama (Default 0 agar tidak error saat loading)
   const [statistikData, setStatistikData] = useState<StatistikItem[]>([
     {
       id: 1,
@@ -33,13 +28,11 @@ const Statistik = () => {
   const [tempStatistikData, setTempStatistikData] = useState(statistikData);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Auth Token
   const token = localStorage.getItem("admin_token");
   const authConfig = {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  // --- 1. AMBIL DATA DARI DATABASE (FETCH) ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,7 +41,6 @@ const Statistik = () => {
           const data = response.data.data[0];
           setDbId(data.id);
 
-          // Masukkan data database ke format UI
           const newData = [
             {
               id: 1,
@@ -89,7 +81,6 @@ const Statistik = () => {
   const [editValues, setEditValues] = useState<{ [key: number]: string }>({});
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
 
-  // Modal Sukses & Error
   const [statusModal, setStatusModal] = useState<{
     isOpen: boolean;
     type: "success" | "error";
@@ -133,7 +124,7 @@ const Statistik = () => {
   const handleCancelEdit = () => {
     setIsEditingAll(false);
     setEditValues({});
-    setTempStatistikData(statistikData); // Reset ke data asli
+    setTempStatistikData(statistikData);
   };
 
   const handleUpdateEditValue = (id: number, value: string) => {
@@ -160,11 +151,9 @@ const Statistik = () => {
     setDeleteConfirm(false);
   };
 
-  // --- 2. SIMPAN KE DATABASE (LOGIC UTAMA) ---
   const handleSaveChanges = async () => {
     setIsLoading(true);
 
-    // Ubah Format Array UI -> Object Database
     const payload: any = {};
     tempStatistikData.forEach((item) => {
       payload[item.dbField] = item.value;
@@ -172,7 +161,6 @@ const Statistik = () => {
 
     try {
       if (dbId) {
-        // UPDATE DATA
         await axios.put(
           `${API_BASE_URL}/statistic/${dbId}`,
           payload,
