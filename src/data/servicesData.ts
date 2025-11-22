@@ -1,4 +1,3 @@
-// src/data/servicesData.ts
 import Layanan1 from "../assets/bangun dari 0.png";
 import Layanan2 from "../assets/renovasi.png";
 import Layanan3 from "../assets/design.png";

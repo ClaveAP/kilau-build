@@ -511,7 +511,7 @@ const Portofolio = () => {
                     <>
                       <p className="text-sm text-gray-600 mb-3 flex items-center gap-2">
                         <svg
-                          className="w-4 h-4 text-gray-500 flex-shrink-0"
+                          className="w-4 h-4 text-gray-500 shrink-0"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+
+// Swiper imports dihapus karena tidak digunakan lagi
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -132,8 +132,9 @@ const Beranda = () => {
         // 2. TESTIMONI
         const resTesti = await axios.get(`${API_BASE_URL}/testimoni`);
         if (resTesti.data.success) {
+          // REVISI: Tambahkan .slice(0, 3) agar hanya menampilkan 3 data
           setTestimonials(
-            resTesti.data.data.map((t: any) => ({
+            resTesti.data.data.slice(0, 3).map((t: any) => ({
               id: t.id,
               name: t.name,
               text: t.review,
@@ -303,73 +304,26 @@ const Beranda = () => {
           </h2>
 
           {testimonials.length > 0 ? (
-            <div className="relative px-4 sm:px-12 max-w-7xl mx-auto">
-              <Swiper
-                modules={[Navigation, Pagination]}
-                spaceBetween={24}
-                slidesPerView={1}
-                breakpoints={{
-                  640: { slidesPerView: 2 },
-                  1024: { slidesPerView: 4 },
-                }}
-                navigation={{
-                  nextEl: ".testi-next",
-                  prevEl: ".testi-prev",
-                }}
-                pagination={{ clickable: true }}
-                className="pb-14"
-              >
-                {testimonials.map((t) => (
-                  <SwiperSlide key={t.id} className="h-auto">
-                    {/* CARD STYLE */}
-                    <div className="bg-white border border-[#87CEFA] rounded-lg p-6 shadow-sm h-full flex flex-col items-center text-center hover:shadow-md transition-all min-h-[220px]">
-                      {/* Nama & Garis Pemisah */}
-                      <div className="w-full border-b border-gray-200 pb-3 mb-4">
-                        <h3 className="font-medium text-gray-800 text-lg">
-                          {t.name}
-                        </h3>
-                      </div>
+            // Grid disesuaikan untuk menampilkan 3 kolom pada layar besar
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 max-w-7xl mx-auto">
+              {testimonials.map((t) => (
+                <div
+                  key={t.id}
+                  className="bg-white rounded-lg p-4 text-center hover:shadow-lg transition-all hover:scale-[1.02] flex flex-col h-full border-2 border-gray-200 shadow-sm"
+                >
+                  <h3 className="font-semibold pb-2 mb-3 border-b border-gray-100">
+                    {t.name}
+                  </h3>
 
-                      {/* Isi Testimoni */}
-                      <p className="text-[11px] text-gray-600 leading-relaxed mb-4 grow line-clamp-4">
-                        {t.text}
-                      </p>
+                  <p className="text-sm text-gray-600 mb-3 min-h-[60px] grow">
+                    {t.text}
+                  </p>
 
-                      {/* Bintang */}
-                      <div className="mt-auto pt-2">
-                        <StarRating rating={t.rating} />
-                      </div>
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-
-              {testimonials.length > 4 && (
-                <>
-                  <button className="testi-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-[#005592] text-white flex items-center justify-center shadow hover:bg-[#004475]">
-                    <svg
-                      className="w-5 h-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M15 18l-6-6 6-6" />
-                    </svg>
-                  </button>
-                  <button className="testi-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-[#005592] text-white flex items-center justify-center shadow hover:bg-[#004475]">
-                    <svg
-                      className="w-5 h-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </button>
-                </>
-              )}
+                  <div className="flex justify-center mb-3">
+                    <StarRating rating={t.rating} />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="text-center text-gray-400 py-8">

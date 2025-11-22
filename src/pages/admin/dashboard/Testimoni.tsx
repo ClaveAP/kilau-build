@@ -310,7 +310,7 @@ const Testimoni = () => {
                     {testimoni.name}
                   </h3>
 
-                  <p className="text-sm text-gray-600 mb-3 min-h-[60px] flex-grow">
+                  <p className="text-sm text-gray-600 mb-3 min-h-[60px] grow">
                     {testimoni.text}
                   </p>
 

@@ -63,7 +63,7 @@ const Portofolio: React.FC = () => {
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
-                <div className="p-4 sm:p-5 flex flex-col flex-grow">
+                <div className="p-4 sm:p-5 flex flex-col grow">
                   <h3
                     className="font-bold text-base sm:text-lg text-gray-900 mb-2 line-clamp-2 min-h-12"
                     style={{ fontFamily: "Roboto, sans-serif" }}
