@@ -64,6 +64,13 @@ const Portofolio: React.FC = () => {
                   />
                 </div>
                 <div className="p-4 sm:p-5 flex flex-col grow">
+                  {/* Tambahan Badge Selesai */}
+                  {/* <div className="mb-2">
+                    <span className="inline-block px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                      Selesai
+                    </span>
+                  </div> */}
+
                   <h3
                     className="font-bold text-base sm:text-lg text-gray-900 mb-2 line-clamp-2 min-h-12"
                     style={{ fontFamily: "Roboto, sans-serif" }}
@@ -71,7 +78,6 @@ const Portofolio: React.FC = () => {
                     {project.name}
                   </h3>
 
-                  {/* Update: Menambahkan Ikon Kalender di sini */}
                   <p
                     className="text-sm sm:text-base text-gray-600 flex items-center gap-2 mt-auto"
                     style={{ fontFamily: "Inter, sans-serif" }}
@@ -170,6 +176,26 @@ const Portofolio: React.FC = () => {
                         style={{ width: `${project.persen || 0}%` }}
                       />
                     </div>
+
+                    {/* ===== STATUS BADGE DARI ADMIN ===== */}
+                    <div className="mt-3">
+                      {project.persen >= 75 && (
+                        <span className="inline-block px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                          Hampir Selesai
+                        </span>
+                      )}
+                      {project.persen >= 40 && project.persen < 75 && (
+                        <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                          Dalam Proses
+                        </span>
+                      )}
+                      {project.persen < 40 && (
+                        <span className="inline-block px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                          Tahap Awal
+                        </span>
+                      )}
+                    </div>
+                    {/* =================================== */}
                   </div>
                 </div>
               </div>
