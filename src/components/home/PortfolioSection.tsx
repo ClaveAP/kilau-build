@@ -10,6 +10,8 @@ interface PortfolioItem {
   subtitle: string;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 const HomePortfolioSection: React.FC = () => {
   const [projects, setProjects] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +19,7 @@ const HomePortfolioSection: React.FC = () => {
   const getImageUrl = (img: string) => {
     if (!img) return "https://placehold.co/600x400?text=No+Image";
     if (img.startsWith("http")) return img;
-    return `http://127.0.0.1:8000/storage/${img}`;
+    return `${API_BASE_URL}/storage/${img}`;
   };
 
   useEffect(() => {
@@ -25,9 +27,9 @@ const HomePortfolioSection: React.FC = () => {
       setIsLoading(true);
       try {
         const [resDone, resOngoing, resInterior] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/project-done"),
-          axios.get("http://127.0.0.1:8000/api/ongoing-project"),
-          axios.get("http://127.0.0.1:8000/api/desain-interior"),
+          axios.get(`${API_URL}/project-done`),
+          axios.get(`${API_URL}/ongoing-project`),
+          axios.get(`${API_URL}/desain-interior`),
         ]);
 
         const featured: PortfolioItem[] = [];

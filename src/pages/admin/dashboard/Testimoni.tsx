@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export interface TestimoniData {
   id: number;
@@ -155,7 +155,7 @@ const Testimoni = () => {
   const fetchTestimonials = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/testimoni`);
+      const response = await axios.get(`${API_URL}/testimoni`);
       if (response.data.success) {
         const mappedData = response.data.data.map((item: any) => ({
           id: item.id,
@@ -223,7 +223,7 @@ const Testimoni = () => {
     try {
       if (editingId) {
         await axios.put(
-          `${API_BASE_URL}/testimoni/${editingId}`,
+          `${API_URL}/testimoni/${editingId}`,
           payload,
           authConfig
         );
@@ -232,7 +232,7 @@ const Testimoni = () => {
           message: "Testimoni berhasil diperbarui!",
         });
       } else {
-        await axios.post(`${API_BASE_URL}/testimoni`, payload, authConfig);
+        await axios.post(`${API_URL}/testimoni`, payload, authConfig);
         setSuccessModal({
           isOpen: true,
           message: "Testimoni baru berhasil ditambahkan!",
@@ -258,7 +258,7 @@ const Testimoni = () => {
     if (deleteConfirm.id) {
       try {
         await axios.delete(
-          `${API_BASE_URL}/testimoni/${deleteConfirm.id}`,
+          `${API_URL}/testimoni/${deleteConfirm.id}`,
           authConfig
         );
         setSuccessModal({

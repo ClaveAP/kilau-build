@@ -9,6 +9,7 @@ interface TestimonialItem {
   stars: number;
 }
 
+const API_URL = import.meta.env.API_URL;
 const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
   return (
     <div className="flex justify-center gap-1">
@@ -38,7 +39,7 @@ const TestimonialsSection: React.FC = () => {
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/testimoni");
+        const response = await axios.get(`${API_URL}/testimoni`);
         if (response.data.success) {
           const mappedData = response.data.data.map((item: any) => ({
             id: item.id,

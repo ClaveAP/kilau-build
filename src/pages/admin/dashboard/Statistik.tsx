@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface StatistikItem {
   id: number;
@@ -24,7 +24,7 @@ const Statistik = () => {
     { id: 4, label: "Kota", value: "0", dbField: "sebaran_kota" },
   ]);
 
-  const [dbId, setDbId] = useState<number | null>(null); // ID Database
+  const [dbId, setDbId] = useState<number | null>(null);
   const [tempStatistikData, setTempStatistikData] = useState(statistikData);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,7 +36,7 @@ const Statistik = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/statistic`);
+        const response = await axios.get(`${API_URL}/statistic`);
         if (response.data.success && response.data.data.length > 0) {
           const data = response.data.data[0];
           setDbId(data.id);
@@ -161,22 +161,17 @@ const Statistik = () => {
 
     try {
       if (dbId) {
-        await axios.put(
-          `${API_BASE_URL}/statistic/${dbId}`,
-          payload,
-          authConfig
-        );
+        await axios.put(`${API_URL}/statistic/${dbId}`, payload, authConfig);
       } else {
-        // BUAT DATA BARU (Pertama kali)
         const res = await axios.post(
-          `${API_BASE_URL}/statistic`,
+          `${API_URL}/statistic`,
           payload,
           authConfig
         );
         setDbId(res.data.data.id);
       }
 
-      setStatistikData(tempStatistikData); // Update state utama
+      setStatistikData(tempStatistikData);
       setStatusModal({
         isOpen: true,
         type: "success",

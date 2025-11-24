@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 const Portofolio: React.FC = () => {
   const [doneProjects, setDoneProjects] = useState<any[]>([]);
   const [ongoingProjects, setOngoingProjects] = useState<any[]>([]);
@@ -9,25 +11,19 @@ const Portofolio: React.FC = () => {
   const getImageUrl = (img: string) => {
     if (!img) return "https://placehold.co/600x400?text=No+Image";
     if (img.startsWith("http")) return img;
-    return `http://127.0.0.1:8000/storage/${img}`;
+    return `${API_BASE_URL}/storage/${img}`;
   };
 
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        const resDone = await axios.get(
-          "http://127.0.0.1:8000/api/project-done"
-        );
+        const resDone = await axios.get(`${API_URL}/project-done`);
         if (resDone.data.success) setDoneProjects(resDone.data.data);
 
-        const resOngoing = await axios.get(
-          "http://127.0.0.1:8000/api/ongoing-project"
-        );
+        const resOngoing = await axios.get(`${API_URL}/ongoing-project`);
         if (resOngoing.data.success) setOngoingProjects(resOngoing.data.data);
 
-        const resInterior = await axios.get(
-          "http://127.0.0.1:8000/api/desain-interior"
-        );
+        const resInterior = await axios.get(`${API_URL}/desain-interior`);
         if (resInterior.data.success)
           setInteriorProjects(resInterior.data.data);
       } catch (error) {

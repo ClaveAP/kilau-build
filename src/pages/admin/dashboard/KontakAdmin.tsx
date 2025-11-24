@@ -13,8 +13,7 @@ interface KontakItem {
   longitude?: number;
 }
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
-
+const API_URL = import.meta.env.VITE_API_URL;
 const KontakAdmin = () => {
   const [kontakData, setKontakData] = useState<KontakItem[]>([]);
   const [dbId, setDbId] = useState<number | null>(null);
@@ -29,12 +28,11 @@ const KontakAdmin = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}/contact`);
+        const response = await axios.get(`${API_URL}/contact`);
         if (response.data.success && response.data.data.length > 0) {
-          const data = response.data.data[0]; // Ambil data pertama
+          const data = response.data.data[0];
           setDbId(data.id);
 
-          // Pecah data database menjadi Array untuk UI Asli Anda
           const mappedData: KontakItem[] = [
             {
               id: 1,
@@ -272,14 +270,10 @@ const KontakAdmin = () => {
     try {
       if (dbId) {
         // UPDATE
-        await axios.put(`${API_BASE_URL}/contact/${dbId}`, payload, authConfig);
+        await axios.put(`${API_URL}/contact/${dbId}`, payload, authConfig);
       } else {
         // CREATE BARU
-        const res = await axios.post(
-          `${API_BASE_URL}/contact`,
-          payload,
-          authConfig
-        );
+        const res = await axios.post(`${API_URL}/contact`, payload, authConfig);
         setDbId(res.data.data.id);
       }
       setSuccessModal({

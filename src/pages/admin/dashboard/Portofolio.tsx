@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 type Category = "done" | "ongoing" | "interior";
 
@@ -33,7 +34,7 @@ const Portofolio = () => {
     else if (activeCategory === "interior") endpoint = "/desain-interior";
 
     try {
-      const response = await axios.get(`${API_BASE_URL}${endpoint}`, {
+      const response = await axios.get(`${API_URL}${endpoint}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -46,7 +47,7 @@ const Portofolio = () => {
           year: item.year ? parseInt(item.year) : new Date().getFullYear(),
           image: item.image.startsWith("http")
             ? item.image
-            : `http://127.0.0.1:8000/storage/${item.image}`,
+            : `${API_BASE_URL}/storage/${item.image}`,
           loc: item.loc || "",
           persen: item.persen || 0,
         }));
@@ -150,7 +151,7 @@ const Portofolio = () => {
       endpoint = `/desain-interior/${deleteConfirm.id}`;
 
     try {
-      await axios.delete(`${API_BASE_URL}${endpoint}`, {
+      await axios.delete(`${API_URL}${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchProjects();
@@ -246,7 +247,7 @@ const Portofolio = () => {
 
     if (activeCategory === "done") {
       dataToSend.append("year", formData.year.toString());
-      dataToSend.append("desc", "-"); // Required by backend
+      dataToSend.append("desc", "-");
     } else if (activeCategory === "ongoing") {
       dataToSend.append("loc", formData.loc);
       dataToSend.append("persen", formData.persen.toString());
@@ -267,8 +268,8 @@ const Portofolio = () => {
 
     const url =
       isEditMode && editingProject
-        ? `${API_BASE_URL}${endpoint}/${editingProject.id}`
-        : `${API_BASE_URL}${endpoint}`;
+        ? `${API_URL}${endpoint}/${editingProject.id}`
+        : `${API_URL}${endpoint}`;
 
     try {
       await axios.post(url, dataToSend, {

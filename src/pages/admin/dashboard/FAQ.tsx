@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const FAQ = () => {
   const [faqs, setFaqs] = useState<any[]>([]);
 
@@ -15,7 +16,7 @@ const FAQ = () => {
 
   function fetchFaqs() {
     axios
-      .get("http://127.0.0.1:8000/api/faq")
+      .get(`${API_URL}/faq`)
       .then((response) => {
         setFaqs(response.data.data);
       })
@@ -77,7 +78,7 @@ const FAQ = () => {
 
       axios
         .put(
-          `http://127.0.0.1:8000/api/faq/${editingId}`,
+          `${API_URL}/faq/${editingId}`,
           {
             question: editQuestion.trim(),
             answer: editAnswer.trim(),
@@ -117,7 +118,7 @@ const FAQ = () => {
   const confirmDelete = () => {
     if (deleteConfirm.id) {
       axios
-        .delete(`http://127.0.0.1:8000/api/faq/${deleteConfirm.id}`, authConfig)
+        .delete(`${API_URL}/faq/${deleteConfirm.id}`, authConfig)
         .then(() => {
           fetchFaqs();
           if (expandedId === deleteConfirm.id) {
@@ -164,7 +165,7 @@ const FAQ = () => {
 
     axios
       .post(
-        "http://127.0.0.1:8000/api/faq",
+        `${API_URL}/faq`,
         {
           question: newQuestion,
           answer: newAnswer,

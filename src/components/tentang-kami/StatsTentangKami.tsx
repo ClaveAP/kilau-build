@@ -7,6 +7,7 @@ interface StatItem {
   value: string;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
 const StatsTentangKami: React.FC = () => {
   const [hasStartedCount, setHasStartedCount] = useState(false);
 
@@ -22,7 +23,7 @@ const StatsTentangKami: React.FC = () => {
 
     const fetchStats = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/statistic");
+        const response = await axios.get(`${API_URL}/statistic`);
         if (response.data.success && response.data.data.length > 0) {
           const data = response.data.data[0];
           setStatsData([

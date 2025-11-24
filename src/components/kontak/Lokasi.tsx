@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const PetaLokasi: React.FC = () => {
   const [mapUrl, setMapUrl] = useState<string>("");
 
@@ -35,7 +36,7 @@ const PetaLokasi: React.FC = () => {
   useEffect(() => {
     const fetchLokasi = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/contact");
+        const response = await axios.get(`${API_URL}/contact`);
         if (response.data.success && response.data.data.length > 0) {
           const data = response.data.data[0];
           if (data.link_gmaps) {

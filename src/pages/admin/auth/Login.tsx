@@ -4,7 +4,7 @@ import AuthLayout from "../../../layouts/AuthLayout";
 
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ const Login = () => {
     setErrorMessage("");
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/login`, {
+      const response = await axios.post(`${API_URL}/login`, {
         loginname: formData.email,
         loginpassword: formData.password,
       });

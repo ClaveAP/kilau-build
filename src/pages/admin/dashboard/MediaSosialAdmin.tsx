@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export interface MediaSosialItem {
   id: number;
@@ -24,7 +25,7 @@ const MediaSosialAdmin = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/post`);
+      const response = await axios.get(`${API_URL}/post`);
       if (response.data.success) {
         const mappedData = response.data.data.map((item: any) => ({
           id: item.id,
@@ -36,7 +37,7 @@ const MediaSosialAdmin = () => {
           }),
           image: item.image.startsWith("http")
             ? item.image
-            : `http://127.0.0.1:8000/storage/${item.image}`,
+            : `${API_BASE_URL}/storage/${item.image}`,
           platform: "instagram",
           isFeatured: item.di_homepage === 1,
           instagramUrl: item.instagram_url,
@@ -150,7 +151,7 @@ const MediaSosialAdmin = () => {
   const handleSaveEdit = async () => {
     if (editingId && editData.title.trim()) {
       const formData = new FormData();
-      formData.append("title", editData.title); // Caption
+      formData.append("title", editData.title);
       formData.append("instagram_url", editData.instagramUrl || "-");
       formData.append("_method", "PUT");
 
@@ -159,7 +160,7 @@ const MediaSosialAdmin = () => {
       }
 
       try {
-        await axios.post(`${API_BASE_URL}/post/${editingId}`, formData, {
+        await axios.post(`${API_URL}/post/${editingId}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -200,7 +201,7 @@ const MediaSosialAdmin = () => {
   const confirmDelete = async () => {
     if (deleteConfirm.id) {
       try {
-        await axios.delete(`${API_BASE_URL}/post/${deleteConfirm.id}`, {
+        await axios.delete(`${API_URL}/post/${deleteConfirm.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         fetchData();
@@ -253,7 +254,7 @@ const MediaSosialAdmin = () => {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/post`, formData, {
+      await axios.post(`${API_URL}/post`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

@@ -8,6 +8,7 @@ interface ContactData {
   email: string;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
 const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({
   href,
   children,
@@ -34,13 +35,11 @@ const Footer: React.FC = () => {
     email: "kilaubuild@gmail.com",
   });
 
-  const API_BASE_URL = "http://127.0.0.1:8000/api";
-
   // 2. Fetch Data dari API saat komponen di-load
   useEffect(() => {
     const fetchContact = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/contact`);
+        const response = await axios.get(`${API_URL}/contact`);
 
         if (response.data.success && response.data.data.length > 0) {
           const data = response.data.data[0];

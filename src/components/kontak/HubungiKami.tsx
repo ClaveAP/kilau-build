@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { MapPin, Phone, Mail } from "lucide-react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const HubungiKami: React.FC = () => {
   const [contactData, setContactData] = useState<any>(null);
 
   useEffect(() => {
     const fetchContact = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/contact");
+        const response = await axios.get(`${API_URL}/contact`);
         if (response.data.success && response.data.data.length > 0) {
           setContactData(response.data.data[0]);
         }

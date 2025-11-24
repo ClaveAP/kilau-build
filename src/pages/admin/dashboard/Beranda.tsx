@@ -3,14 +3,13 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import axios from "axios";
 
-// Swiper imports dihapus karena tidak digunakan lagi
-
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const getImageUrl = (img: string) => {
   if (!img) return "https://placehold.co/600x400?text=No+Image";
   if (img.startsWith("http")) return img;
-  return `http://127.0.0.1:8000/storage/${img}`;
+  return `${API_BASE_URL}/storage/${img}`;
 };
 
 const InstagramBadge = () => (
@@ -118,7 +117,7 @@ const Beranda = () => {
     const fetchAll = async () => {
       try {
         // 1. STATISTIK
-        const resStats = await axios.get(`${API_BASE_URL}/statistic`);
+        const resStats = await axios.get(`${API_URL}/statistic`);
         if (resStats.data.success && resStats.data.data.length > 0) {
           const d = resStats.data.data[0];
           setStatistikData([
@@ -130,9 +129,8 @@ const Beranda = () => {
         }
 
         // 2. TESTIMONI
-        const resTesti = await axios.get(`${API_BASE_URL}/testimoni`);
+        const resTesti = await axios.get(`${API_URL}/testimoni`);
         if (resTesti.data.success) {
-          // REVISI: Tambahkan .slice(0, 3) agar hanya menampilkan 3 data
           setTestimonials(
             resTesti.data.data.slice(0, 3).map((t: any) => ({
               id: t.id,
@@ -144,7 +142,7 @@ const Beranda = () => {
         }
 
         // 3. KONTAK
-        const resKontak = await axios.get(`${API_BASE_URL}/contact`);
+        const resKontak = await axios.get(`${API_URL}/contact`);
         if (resKontak.data.success && resKontak.data.data.length > 0) {
           const d = resKontak.data.data[0];
           setKontakData([
@@ -161,13 +159,13 @@ const Beranda = () => {
         }
 
         // 4. FAQ
-        const resFaq = await axios.get(`${API_BASE_URL}/faq`);
+        const resFaq = await axios.get(`${API_URL}/faq`);
         if (resFaq.data.success) {
           setFaqs(resFaq.data.data.slice(0, 5));
         }
 
         // 5. MEDIA SOSIAL
-        const resPost = await axios.get(`${API_BASE_URL}/post`);
+        const resPost = await axios.get(`${API_URL}/post`);
         if (resPost.data.success) {
           setMediaSosialData(
             resPost.data.data.slice(0, 3).map((p: any) => ({
@@ -187,9 +185,9 @@ const Beranda = () => {
 
         // 6. PORTOFOLIO
         const [resDone, resOngoing, resInterior] = await Promise.all([
-          axios.get(`${API_BASE_URL}/project-done`),
-          axios.get(`${API_BASE_URL}/ongoing-project`),
-          axios.get(`${API_BASE_URL}/desain-interior`),
+          axios.get(`${API_URL}/project-done`),
+          axios.get(`${API_URL}/ongoing-project`),
+          axios.get(`${API_URL}/desain-interior`),
         ]);
 
         const allProjects = [

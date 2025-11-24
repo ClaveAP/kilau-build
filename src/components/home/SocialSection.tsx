@@ -16,6 +16,8 @@ interface SocialPost {
   isFeatured: boolean;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 const HomeSocialSection: React.FC = () => {
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +25,7 @@ const HomeSocialSection: React.FC = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/post");
+        const response = await axios.get(`${API_URL}/post`);
         if (response.data.success) {
           const data = response.data.data;
           const mappedData = data.map((item: any) => ({
@@ -37,7 +39,7 @@ const HomeSocialSection: React.FC = () => {
             }),
             imageUrl: item.image.startsWith("http")
               ? item.image
-              : `http://127.0.0.1:8000/storage/${item.image}`,
+              : `${API_BASE_URL}/${item.image}`,
             url: item.instagram_url,
             category: {
               name: "Instagram",

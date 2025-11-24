@@ -9,7 +9,8 @@ interface InstagramPostItem {
   image: string;
   instagramUrl: string;
 }
-
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 const MediaSosial: React.FC = () => {
   const [posts, setPosts] = useState<InstagramPostItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +18,7 @@ const MediaSosial: React.FC = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/post");
+        const response = await axios.get(`${API_URL}/post`);
         if (response.data.success) {
           const mappedData = response.data.data.map((item: any) => ({
             id: item.id,
@@ -30,7 +31,7 @@ const MediaSosial: React.FC = () => {
             }),
             image: item.image.startsWith("http")
               ? item.image
-              : `http://127.0.0.1:8000/storage/${item.image}`,
+              : `${API_BASE_URL}/storage/${item.image}`,
             instagramUrl: item.instagram_url,
           }));
           setPosts(mappedData);

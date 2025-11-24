@@ -11,6 +11,8 @@ interface StatItem {
   value: string;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const AboutSection: React.FC = () => {
   const navigate = useNavigate();
   const ref = useRef(null);
@@ -27,7 +29,7 @@ const AboutSection: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/statistic");
+        const response = await axios.get(`${API_URL}/statistic`);
         if (response.data.success && response.data.data.length > 0) {
           const data = response.data.data[0];
           setStats([

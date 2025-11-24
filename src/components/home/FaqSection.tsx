@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const FaqItem: React.FC<{
   item: { id: number; question: string; answer: string };
   isOpen: boolean;
@@ -67,7 +68,7 @@ const FaqSection: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/faq")
+      .get(`${API_URL}/faq`)
       .then((response) => {
         setFaqs(response.data.data);
       })
