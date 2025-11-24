@@ -39,7 +39,7 @@ const HomeSocialSection: React.FC = () => {
             }),
             imageUrl: item.image.startsWith("http")
               ? item.image
-              : `${API_BASE_URL}/${item.image}`,
+              : `${API_BASE_URL}/storage/${item.image}`,
             url: item.instagram_url,
             category: {
               name: "Instagram",
