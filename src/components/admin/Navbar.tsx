@@ -50,10 +50,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     navigate("/admin/change-password");
   };
 
-  const handleProfile = () => {
-    setIsDropdownOpen(false);
-  };
-
   // Get initials from admin name
   const getInitials = (name: string) => {
     return name

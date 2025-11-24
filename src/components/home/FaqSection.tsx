@@ -55,9 +55,15 @@ const FaqItem: React.FC<{
   );
 };
 
+type Faqs = {
+  id: number;
+  question: string;
+  answer: string;
+};
+
 const FaqSection: React.FC = () => {
   const [openId, setOpenId] = useState<number | null>(null);
-  const [faqs, setFaqs] = useState([]);
+  const [faqs, setFaqs] = useState<Faqs[] | []>([]);
 
   useEffect(() => {
     axios
@@ -82,7 +88,7 @@ const FaqSection: React.FC = () => {
         </h2>
 
         <div className="w-full space-y-4">
-          {faqs.map((faq) => (
+          {faqs.map((faq: Faqs) => (
             <FaqItem
               key={faq.id}
               item={faq}
