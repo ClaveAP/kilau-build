@@ -1,5 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
+interface ContactData {
+  alamat: string;
+  no_telp: string;
+  email: string;
+}
 
 const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({
   href,
@@ -18,6 +25,40 @@ const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({
 };
 
 const Footer: React.FC = () => {
+  // 1. Setup State dengan nilai default
+  //  Menjaga UI tetap bagus saat loading atau jika API error
+  const [contactInfo, setContactInfo] = useState<ContactData>({
+    alamat:
+      "Jl. Raya Citayam No.34, RT./Rw.001/004, Pd. Jaya, Kec. Cipayung, Kota Depok, Jawa Barat 16444",
+    no_telp: "+62 877-7636-0795",
+    email: "kilaubuild@gmail.com",
+  });
+
+  const API_BASE_URL = "http://127.0.0.1:8000/api";
+
+  // 2. Fetch Data dari API saat komponen di-load
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/contact`);
+
+        if (response.data.success && response.data.data.length > 0) {
+          const data = response.data.data[0];
+          setContactInfo({
+            alamat: data.alamat || "-",
+            no_telp: data.no_telp || "-",
+            email: data.email || "-",
+          });
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data kontak footer:", error);
+        // Jika gagal, akan tetap menggunakan nilai default state di atas
+      }
+    };
+
+    fetchContact();
+  }, []);
+
   return (
     <footer className="bg-[#005592] text-white pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,7 +114,7 @@ const Footer: React.FC = () => {
                 </svg>
               </SocialIcon>
 
-              {/* TikTok - FIXED ICON */}
+              {/* TikTok */}
               <SocialIcon href="https://tiktok.com/@buildkilau">
                 <svg
                   className="w-6 h-6"
@@ -120,7 +161,6 @@ const Footer: React.FC = () => {
               className="space-y-4"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
-              {/* 🔽 2. REVISI <a> JADI <Link> 🔽 */}
               <li>
                 <Link
                   to="/tentang-kami"
@@ -176,32 +216,31 @@ const Footer: React.FC = () => {
               className="space-y-4"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
+              {/* 3. Gunakan data dari State di sini */}
               <li>
                 <a
-                  href="tel:+6287776360795"
+                  href={`tel:${contactInfo.no_telp}`}
                   className="text-white hover:text-gray-200 transition-colors text-base"
                 >
-                  +62 877-7636-0795
+                  {contactInfo.no_telp}
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:kilaubuild@gmail.com"
+                  href={`mailto:${contactInfo.email}`}
                   className="text-white hover:text-gray-200 transition-colors text-base"
                 >
-                  kilaubuild@gmail.com
+                  {contactInfo.email}
                 </a>
               </li>
               <li className="leading-relaxed text-white text-base">
-                Jl. Raya Citayam No.34, RT./Rw.001/004, Pd. Jaya, Kec. Cipayung,
-                Kota Depok, Jawa Barat 16444
+                {contactInfo.alamat}
               </li>
             </ul>
           </div>
         </div>
 
         {/* Divider */}
-        {/* REVISI: Garisnya dibikin lebih terang (putih/30) 🔽 */}
         <hr className="my-8 border-t border-white/30" />
 
         {/* Copyright */}
